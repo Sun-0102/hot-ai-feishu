@@ -8,6 +8,7 @@
 2. 本目录已经推送到这个仓库。
 3. 在仓库 `Settings -> Secrets and variables -> Actions -> Secrets` 添加：
    - `OPENAI_API_KEY`
+   - `OPENAI_BASE_URL`，可选；如果你用中转 API，就填中转地址，例如 `https://你的中转域名/v1`
    - `FEISHU_WEBHOOK_URL`
    - `FEISHU_SECRET`，可选；只有飞书机器人开启签名校验时才需要
 4. 在仓库 `Settings -> Pages` 中选择 `GitHub Actions` 作为发布来源。
@@ -19,7 +20,7 @@
 
 在 `Settings -> Secrets and variables -> Actions -> Variables` 里可以添加：
 
-- `OPENAI_MODEL`：默认 `gpt-4.1-mini`
+- `OPENAI_MODEL`：默认 `gpt-4.1-mini`；如果中转不支持这个模型，改成你的中转支持的模型名
 
 ## 本地试跑
 

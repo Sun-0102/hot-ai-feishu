@@ -120,6 +120,12 @@ def fallback_digest(candidates: list[dict]) -> dict:
 
 
 def extract_response_text(data: dict) -> str:
+    choices = data.get("choices")
+    if isinstance(choices, list) and choices:
+        message = choices[0].get("message", {})
+        content = message.get("content")
+        if isinstance(content, str):
+            return content
     if isinstance(data.get("output_text"), str):
         return data["output_text"]
     chunks: list[str] = []
@@ -137,52 +143,22 @@ def ai_digest(candidates: list[dict]) -> dict:
 
     prompt = PROMPT_FILE.read_text(encoding="utf-8")
     model = os.getenv("OPENAI_MODEL", "gpt-4.1-mini")
+    base_url = os.getenv("OPENAI_BASE_URL", "https://api.openai.com/v1").rstrip("/")
     payload = {
         "model": model,
-        "instructions": prompt,
-        "input": json.dumps({"candidates": candidates}, ensure_ascii=False),
-        "text": {
-            "format": {
-                "type": "json_schema",
-                "name": "github_hot_digest",
-                "strict": True,
-                "schema": {
-                    "type": "object",
-                    "additionalProperties": False,
-                    "required": ["title", "summary", "repos"],
-                    "properties": {
-                        "title": {"type": "string"},
-                        "summary": {"type": "string"},
-                        "repos": {
-                            "type": "array",
-                            "maxItems": 10,
-                            "items": {
-                                "type": "object",
-                                "additionalProperties": False,
-                                "required": ["full_name", "url", "description", "language", "stars", "forks", "reason", "tags"],
-                                "properties": {
-                                    "full_name": {"type": "string"},
-                                    "url": {"type": "string"},
-                                    "description": {"type": "string"},
-                                    "language": {"type": "string"},
-                                    "stars": {"type": "integer"},
-                                    "forks": {"type": "integer"},
-                                    "reason": {"type": "string"},
-                                    "tags": {
-                                        "type": "array",
-                                        "maxItems": 4,
-                                        "items": {"type": "string"},
-                                    },
-                                },
-                            },
-                        },
-                    },
-                },
-            }
-        },
+        "messages": [
+            {"role": "system", "content": prompt},
+            {
+                "role": "user",
+                "content": "请只返回 JSON，不要输出 Markdown 代码块。\n\n候选项目：\n"
+                + json.dumps({"candidates": candidates}, ensure_ascii=False),
+            },
+        ],
+        "response_format": {"type": "json_object"},
+        "temperature": 0.4,
     }
     data = request_json(
-        "https://api.openai.com/v1/responses",
+        f"{base_url}/chat/completions",
         method="POST",
         headers={"Authorization": f"Bearer {api_key}"},
         payload=payload,
