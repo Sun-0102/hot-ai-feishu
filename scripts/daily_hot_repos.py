@@ -483,6 +483,13 @@ def send_feishu_link(meta: dict) -> None:
     webhook = os.getenv("FEISHU_WEBHOOK_URL")
     if not webhook:
         raise RuntimeError("FEISHU_WEBHOOK_URL is required")
+    parsed = urllib.parse.urlparse(webhook)
+    allowed_hosts = {"open.feishu.cn", "open.larksuite.com"}
+    if parsed.scheme != "https" or parsed.netloc not in allowed_hosts or not parsed.path.startswith("/open-apis/bot/v2/hook/"):
+        raise RuntimeError(
+            "FEISHU_WEBHOOK_URL must be a Feishu custom bot webhook, "
+            "for example https://open.feishu.cn/open-apis/bot/v2/hook/..."
+        )
     text = f"{meta['title']}\n{meta['date']}\n\n查看完整 HTML 日报：\n{meta['url']}"
     data = request_json(webhook, method="POST", payload=feishu_payload(text), allow_empty_response=True)
     if data.get("code") not in (None, 0):

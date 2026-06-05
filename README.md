@@ -38,6 +38,8 @@ OPENAI_API_KEY=你的_key python scripts/daily_hot_repos.py --no-send
 
 如果 Actions 报 HTTP 503，通常是中转服务临时不可用或当前模型不可用。脚本会自动重试；重试后仍失败时，会先生成规则版日报并继续发飞书链接。你可以把 `OPENAI_MODEL` 改成中转支持的模型，或用 `OPENAI_FALLBACK_MODELS` 配备用模型。
 
+`FEISHU_WEBHOOK_URL` 必须是飞书机器人地址，格式类似 `https://open.feishu.cn/open-apis/bot/v2/hook/...`。不要把 `OPENAI_BASE_URL` 的中转地址填到这里。
+
 ## 输出位置
 
 HTML 日报会生成到：
