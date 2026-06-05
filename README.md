@@ -22,6 +22,7 @@
 在 `Settings -> Secrets and variables -> Actions -> Variables` 里可以添加：
 
 - `OPENAI_MODEL`：默认 `gpt-4.1-mini`；如果中转不支持这个模型，改成你的中转支持的模型名
+- `OPENAI_FALLBACK_MODELS`：可选，多个模型用英文逗号分隔；主模型失败时会依次尝试
 
 ## 本地试跑
 
@@ -34,6 +35,8 @@ OPENAI_API_KEY=你的_key python scripts/daily_hot_repos.py --no-send
 如果不设置 `OPENAI_API_KEY`，脚本会生成一个非 AI 的简版日报，用来测试流程。
 
 如果 Actions 报 `POST ***/chat/completions failed: HTTP 404`，通常是中转地址路径不对。优先把 `OPENAI_BASE_URL` 改成中转域名本身，例如 `https://api.example.com`；如果仍失败，再改用 `OPENAI_CHAT_COMPLETIONS_URL` 填完整接口。
+
+如果 Actions 报 HTTP 503，通常是中转服务临时不可用或当前模型不可用。脚本会自动重试；重试后仍失败时，会先生成规则版日报并继续发飞书链接。你可以把 `OPENAI_MODEL` 改成中转支持的模型，或用 `OPENAI_FALLBACK_MODELS` 配备用模型。
 
 ## 输出位置
 

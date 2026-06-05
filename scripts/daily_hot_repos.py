@@ -25,7 +25,14 @@ META_FILE = ROOT / "public" / "latest-report.json"
 TZ = ZoneInfo("Asia/Shanghai")
 
 
-def request_json(url: str, *, method: str = "GET", headers: dict[str, str] | None = None, payload: dict | None = None) -> dict:
+def request_json(
+    url: str,
+    *,
+    method: str = "GET",
+    headers: dict[str, str] | None = None,
+    payload: dict | None = None,
+    retries: int = 0,
+) -> dict:
     body = None
     final_headers = {"User-Agent": "github-hot-ai-feishu"}
     if headers:
@@ -34,13 +41,18 @@ def request_json(url: str, *, method: str = "GET", headers: dict[str, str] | Non
         body = json.dumps(payload, ensure_ascii=False).encode("utf-8")
         final_headers["Content-Type"] = "application/json"
 
-    request = urllib.request.Request(url, data=body, headers=final_headers, method=method)
-    try:
-        with urllib.request.urlopen(request, timeout=45) as response:
-            return json.loads(response.read().decode("utf-8"))
-    except urllib.error.HTTPError as exc:
-        detail = exc.read().decode("utf-8", errors="replace")
-        raise RuntimeError(f"{method} {url} failed: HTTP {exc.code}: {detail}") from exc
+    retry_statuses = {429, 500, 502, 503, 504}
+    for attempt in range(retries + 1):
+        request = urllib.request.Request(url, data=body, headers=final_headers, method=method)
+        try:
+            with urllib.request.urlopen(request, timeout=45) as response:
+                return json.loads(response.read().decode("utf-8"))
+        except urllib.error.HTTPError as exc:
+            detail = exc.read().decode("utf-8", errors="replace")
+            if exc.code in retry_statuses and attempt < retries:
+                time.sleep(2 * (attempt + 1))
+                continue
+            raise RuntimeError(f"{method} {url} failed: HTTP {exc.code}: {detail}") from exc
 
 
 def github_search(query: str, token: str | None, *, per_page: int = 30) -> list[dict]:
@@ -97,7 +109,7 @@ def collect_candidates(today: dt.date) -> list[dict]:
     return candidates[:60]
 
 
-def fallback_digest(candidates: list[dict]) -> dict:
+def fallback_digest(candidates: list[dict], *, reason: str | None = None) -> dict:
     repos = []
     for repo in candidates[:10]:
         repos.append(
@@ -114,7 +126,8 @@ def fallback_digest(candidates: list[dict]) -> dict:
         )
     return {
         "title": "GitHub 今日热门项目",
-        "summary": "以下项目来自 GitHub 近期热门仓库数据。由于未配置 OpenAI API，本次使用规则排序生成简版日报。",
+        "summary": reason
+        or "以下项目来自 GitHub 近期热门仓库数据。由于未配置 OpenAI API，本次使用规则排序生成简版日报。",
         "repos": repos,
     }
 
@@ -155,31 +168,49 @@ def ai_digest(candidates: list[dict]) -> dict:
         return fallback_digest(candidates)
 
     prompt = PROMPT_FILE.read_text(encoding="utf-8")
-    model = os.getenv("OPENAI_MODEL", "gpt-4.1-mini")
+    models = [os.getenv("OPENAI_MODEL", "gpt-4.1-mini")]
+    fallback_models = os.getenv("OPENAI_FALLBACK_MODELS", "")
+    models.extend(model.strip() for model in fallback_models.split(",") if model.strip())
     chat_url = openai_chat_completions_url()
-    payload = {
-        "model": model,
-        "messages": [
-            {"role": "system", "content": prompt},
-            {
-                "role": "user",
-                "content": "请只返回 JSON，不要输出 Markdown 代码块。\n\n候选项目：\n"
-                + json.dumps({"candidates": candidates}, ensure_ascii=False),
-            },
-        ],
-        "response_format": {"type": "json_object"},
-        "temperature": 0.4,
-    }
-    data = request_json(
-        chat_url,
-        method="POST",
-        headers={"Authorization": f"Bearer {api_key}"},
-        payload=payload,
+    errors: list[str] = []
+
+    for model in models:
+        payload = {
+            "model": model,
+            "messages": [
+                {"role": "system", "content": prompt},
+                {
+                    "role": "user",
+                    "content": "请只返回 JSON，不要输出 Markdown 代码块。\n\n候选项目：\n"
+                    + json.dumps({"candidates": candidates}, ensure_ascii=False),
+                },
+            ],
+            "response_format": {"type": "json_object"},
+            "temperature": 0.4,
+        }
+        try:
+            data = request_json(
+                chat_url,
+                method="POST",
+                headers={"Authorization": f"Bearer {api_key}"},
+                payload=payload,
+                retries=2,
+            )
+            text = extract_response_text(data)
+            if not text:
+                raise RuntimeError("OpenAI response did not contain output text")
+            return json.loads(text)
+        except Exception as exc:
+            errors.append(f"{model}: {exc}")
+
+    if os.getenv("FAIL_ON_AI_ERROR", "").lower() in {"1", "true", "yes"}:
+        raise RuntimeError("AI digest failed: " + " | ".join(errors))
+
+    print("warning: AI digest failed, using fallback digest: " + " | ".join(errors), file=sys.stderr)
+    return fallback_digest(
+        candidates,
+        reason="AI 中转服务暂时不可用，本次先使用 GitHub 热度规则生成简版日报；后续运行会继续尝试 AI 总结。",
     )
-    text = extract_response_text(data)
-    if not text:
-        raise RuntimeError("OpenAI response did not contain output text")
-    return json.loads(text)
 
 
 def fmt_num(value: int) -> str:
