@@ -132,6 +132,57 @@ def fallback_digest(candidates: list[dict], *, reason: str | None = None) -> dic
     }
 
 
+def to_int(value: object, default: int = 0) -> int:
+    try:
+        return int(value)
+    except (TypeError, ValueError):
+        return default
+
+
+def normalize_digest(digest: dict, candidates: list[dict]) -> dict:
+    candidate_by_name = {repo.get("full_name"): repo for repo in candidates if repo.get("full_name")}
+    normalized_repos: list[dict] = []
+    raw_repos = digest.get("repos", [])
+    if not isinstance(raw_repos, list):
+        raw_repos = []
+
+    for raw_repo in raw_repos[:10]:
+        if not isinstance(raw_repo, dict):
+            continue
+        full_name = raw_repo.get("full_name") or raw_repo.get("name") or raw_repo.get("repo")
+        if not full_name:
+            continue
+        candidate = candidate_by_name.get(full_name, {})
+        tags = raw_repo.get("tags") or candidate.get("topics") or ["热门项目"]
+        if not isinstance(tags, list):
+            tags = [str(tags)]
+
+        normalized_repos.append(
+            {
+                "full_name": str(full_name),
+                "url": raw_repo.get("url") or raw_repo.get("html_url") or candidate.get("html_url") or "#",
+                "description": raw_repo.get("description") or candidate.get("description") or "暂无项目描述。",
+                "language": raw_repo.get("language") or candidate.get("language") or "Unknown",
+                "stars": to_int(raw_repo.get("stars"), to_int(candidate.get("stargazers_count"))),
+                "forks": to_int(raw_repo.get("forks"), to_int(candidate.get("forks_count"))),
+                "reason": raw_repo.get("reason") or "该项目近期关注度较高，值得快速浏览其定位、README 和实现方式。",
+                "tags": [str(tag) for tag in tags[:4]],
+            }
+        )
+
+    if not normalized_repos:
+        return fallback_digest(
+            candidates,
+            reason="AI 返回内容缺少可渲染的项目列表，本次先使用 GitHub 热度规则生成简版日报。",
+        )
+
+    return {
+        "title": digest.get("title") or "GitHub 今日热门项目",
+        "summary": digest.get("summary") or "以下项目由 AI 从 GitHub 近期热门仓库中筛选生成。",
+        "repos": normalized_repos,
+    }
+
+
 def extract_response_text(data: dict) -> str:
     choices = data.get("choices")
     if isinstance(choices, list) and choices:
@@ -199,7 +250,7 @@ def ai_digest(candidates: list[dict]) -> dict:
             text = extract_response_text(data)
             if not text:
                 raise RuntimeError("OpenAI response did not contain output text")
-            return json.loads(text)
+            return normalize_digest(json.loads(text), candidates)
         except Exception as exc:
             errors.append(f"{model}: {exc}")
 
@@ -228,7 +279,7 @@ def render_html(digest: dict, report_date: dt.date) -> str:
             <article class="repo">
               <div class="rank">{index:02d}</div>
               <div class="repo-body">
-                <h2><a href="{html.escape(repo["url"])}">{html.escape(repo["full_name"])}</a></h2>
+                <h2><a href="{html.escape(repo.get("url") or "#")}">{html.escape(repo.get("full_name") or "Unknown")}</a></h2>
                 <p class="desc">{html.escape(repo.get("description") or "暂无项目描述。")}</p>
                 <p class="reason">{html.escape(repo.get("reason") or "")}</p>
                 <div class="meta">
