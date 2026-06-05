@@ -168,7 +168,7 @@ def ai_digest(candidates: list[dict]) -> dict:
         return fallback_digest(candidates)
 
     prompt = PROMPT_FILE.read_text(encoding="utf-8")
-    models = [os.getenv("OPENAI_MODEL", "gpt-4.1-mini")]
+    models = [os.getenv("OPENAI_MODEL", "gpt-5.4")]
     fallback_models = os.getenv("OPENAI_FALLBACK_MODELS", "")
     models.extend(model.strip() for model in fallback_models.split(",") if model.strip())
     chat_url = openai_chat_completions_url()

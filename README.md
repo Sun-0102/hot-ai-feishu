@@ -21,7 +21,7 @@
 
 在 `Settings -> Secrets and variables -> Actions -> Variables` 里可以添加：
 
-- `OPENAI_MODEL`：默认 `gpt-4.1-mini`；如果中转不支持这个模型，改成你的中转支持的模型名
+- `OPENAI_MODEL`：默认 `gpt-5.4`；如果中转不支持这个模型，改成你的中转支持的模型名
 - `OPENAI_FALLBACK_MODELS`：可选，多个模型用英文逗号分隔；主模型失败时会依次尝试
 
 ## 本地试跑
