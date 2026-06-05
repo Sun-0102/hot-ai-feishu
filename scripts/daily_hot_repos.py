@@ -136,6 +136,19 @@ def extract_response_text(data: dict) -> str:
     return "\n".join(chunks)
 
 
+def openai_chat_completions_url() -> str:
+    explicit_url = os.getenv("OPENAI_CHAT_COMPLETIONS_URL", "").strip()
+    if explicit_url:
+        return explicit_url.rstrip("/")
+
+    base_url = os.getenv("OPENAI_BASE_URL", "https://api.openai.com/v1").strip().rstrip("/")
+    if base_url.endswith("/chat/completions"):
+        return base_url
+    if base_url.endswith("/v1"):
+        return f"{base_url}/chat/completions"
+    return f"{base_url}/v1/chat/completions"
+
+
 def ai_digest(candidates: list[dict]) -> dict:
     api_key = os.getenv("OPENAI_API_KEY")
     if not api_key:
@@ -143,7 +156,7 @@ def ai_digest(candidates: list[dict]) -> dict:
 
     prompt = PROMPT_FILE.read_text(encoding="utf-8")
     model = os.getenv("OPENAI_MODEL", "gpt-4.1-mini")
-    base_url = os.getenv("OPENAI_BASE_URL", "https://api.openai.com/v1").rstrip("/")
+    chat_url = openai_chat_completions_url()
     payload = {
         "model": model,
         "messages": [
@@ -158,7 +171,7 @@ def ai_digest(candidates: list[dict]) -> dict:
         "temperature": 0.4,
     }
     data = request_json(
-        f"{base_url}/chat/completions",
+        chat_url,
         method="POST",
         headers={"Authorization": f"Bearer {api_key}"},
         payload=payload,

@@ -8,7 +8,8 @@
 2. 本目录已经推送到这个仓库。
 3. 在仓库 `Settings -> Secrets and variables -> Actions -> Secrets` 添加：
    - `OPENAI_API_KEY`
-   - `OPENAI_BASE_URL`，可选；如果你用中转 API，就填中转地址，例如 `https://你的中转域名/v1`
+   - `OPENAI_BASE_URL`，可选；如果你用中转 API，可以填 `https://你的中转域名` 或 `https://你的中转域名/v1`
+   - `OPENAI_CHAT_COMPLETIONS_URL`，可选；如果中转只给你完整接口地址，就填完整的 `https://.../v1/chat/completions`
    - `FEISHU_WEBHOOK_URL`
    - `FEISHU_SECRET`，可选；只有飞书机器人开启签名校验时才需要
 4. 在仓库 `Settings -> Pages` 中选择 `GitHub Actions` 作为发布来源。
@@ -31,6 +32,8 @@ OPENAI_API_KEY=你的_key python scripts/daily_hot_repos.py --no-send
 ```
 
 如果不设置 `OPENAI_API_KEY`，脚本会生成一个非 AI 的简版日报，用来测试流程。
+
+如果 Actions 报 `POST ***/chat/completions failed: HTTP 404`，通常是中转地址路径不对。优先把 `OPENAI_BASE_URL` 改成中转域名本身，例如 `https://api.example.com`；如果仍失败，再改用 `OPENAI_CHAT_COMPLETIONS_URL` 填完整接口。
 
 ## 输出位置
 
