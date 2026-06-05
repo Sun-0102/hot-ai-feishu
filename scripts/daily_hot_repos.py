@@ -32,6 +32,7 @@ def request_json(
     headers: dict[str, str] | None = None,
     payload: dict | None = None,
     retries: int = 0,
+    allow_empty_response: bool = False,
 ) -> dict:
     body = None
     final_headers = {"User-Agent": "github-hot-ai-feishu"}
@@ -46,7 +47,15 @@ def request_json(
         request = urllib.request.Request(url, data=body, headers=final_headers, method=method)
         try:
             with urllib.request.urlopen(request, timeout=45) as response:
-                return json.loads(response.read().decode("utf-8"))
+                detail = response.read().decode("utf-8", errors="replace").strip()
+                if not detail:
+                    if allow_empty_response:
+                        return {}
+                    raise RuntimeError(f"{method} {url} returned an empty response")
+                try:
+                    return json.loads(detail)
+                except json.JSONDecodeError as exc:
+                    raise RuntimeError(f"{method} {url} returned a non-JSON response: {detail[:500]}") from exc
         except urllib.error.HTTPError as exc:
             detail = exc.read().decode("utf-8", errors="replace")
             if exc.code in retry_statuses and attempt < retries:
@@ -475,7 +484,7 @@ def send_feishu_link(meta: dict) -> None:
     if not webhook:
         raise RuntimeError("FEISHU_WEBHOOK_URL is required")
     text = f"{meta['title']}\n{meta['date']}\n\n查看完整 HTML 日报：\n{meta['url']}"
-    data = request_json(webhook, method="POST", payload=feishu_payload(text))
+    data = request_json(webhook, method="POST", payload=feishu_payload(text), allow_empty_response=True)
     if data.get("code") not in (None, 0):
         raise RuntimeError(f"Feishu webhook failed: {data}")
 
