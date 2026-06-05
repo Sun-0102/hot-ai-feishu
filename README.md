@@ -4,8 +4,8 @@
 
 ## 你需要在 GitHub 上配置
 
-1. 新建一个仓库，建议同名：`github-hot-ai-feishu`。
-2. 把本目录推送到这个仓库。
+1. GitHub 仓库：`https://github.com/Sun-0102/hot-ai-feishu`
+2. 本目录已经推送到这个仓库。
 3. 在仓库 `Settings -> Secrets and variables -> Actions -> Secrets` 添加：
    - `OPENAI_API_KEY`
    - `FEISHU_WEBHOOK_URL`
