@@ -24,6 +24,16 @@ PROMPT_FILE = ROOT / "prompts" / "digest_prompt.txt"
 META_FILE = ROOT / "public" / "latest-report.json"
 TZ = ZoneInfo("Asia/Shanghai")
 
+# 按语言分区：每个分组在日报里是独立区块（顶部导航 + 一段列表）。
+# languages 里的多个 GitHub 语言名会合并去重后一起排名（例如 JS/TS 合并）。
+LANGUAGE_GROUPS = [
+    {"label": "Python", "languages": ["Python"]},
+    {"label": "Java", "languages": ["Java"]},
+    {"label": "Go", "languages": ["Go"]},
+    {"label": "JavaScript / TypeScript", "languages": ["JavaScript", "TypeScript"]},
+    {"label": "Rust", "languages": ["Rust"]},
+]
+
 
 def request_json(
     url: str,
@@ -82,26 +92,41 @@ def github_search(query: str, token: str | None, *, per_page: int = 30) -> list[
 
 
 def collect_candidates(today: dt.date) -> list[dict]:
+    """按语言各取一批热门候选。
+
+    口径（可用环境变量覆盖）：每门语言 = 近 HOT_WINDOW_DAYS 天有更新(pushed)
+    且 star ≥ HOT_STARS_MIN 的仓库，按 star 降序取前 HOT_PER_LANGUAGE 个。
+    达标不足则少于上限，为 0 则该语言不产出候选（区块会被省略）。
+    """
     token = os.getenv("GITHUB_TOKEN")
-    since_7d = today - dt.timedelta(days=7)
-    since_30d = today - dt.timedelta(days=30)
-    queries = [
-        f"created:>={since_7d.isoformat()} stars:>20 archived:false",
-        f"pushed:>={since_7d.isoformat()} stars:>300 archived:false",
-        f"created:>={since_30d.isoformat()} stars:>100 archived:false",
-    ]
+    window_days = to_int(os.getenv("HOT_WINDOW_DAYS"), 7)
+    stars_min = to_int(os.getenv("HOT_STARS_MIN"), 200)
+    per_language = to_int(os.getenv("HOT_PER_LANGUAGE"), 10)
+    since = (today - dt.timedelta(days=window_days)).isoformat()
 
     seen: set[int] = set()
     candidates: list[dict] = []
-    for query in queries:
-        for repo in github_search(query, token):
-            repo_id = repo.get("id")
-            if repo_id in seen:
-                continue
-            seen.add(repo_id)
+    for group in LANGUAGE_GROUPS:
+        group_repos: dict[int, dict] = {}
+        for language in group["languages"]:
+            query = f'language:"{language}" pushed:>={since} stars:>={stars_min} archived:false'
+            for repo in github_search(query, token, per_page=per_language):
+                repo_id = repo.get("id")
+                if repo_id is None or repo_id in seen or repo_id in group_repos:
+                    continue
+                group_repos[repo_id] = repo
+        # 合并该分组的多门语言后，统一按 star 降序取前 N。
+        ranked = sorted(
+            group_repos.values(),
+            key=lambda r: r.get("stargazers_count", 0),
+            reverse=True,
+        )[:per_language]
+        for repo in ranked:
+            seen.add(repo.get("id"))
             candidates.append(
                 {
-                    "id": repo_id,
+                    "id": repo.get("id"),
+                    "group": group["label"],
                     "full_name": repo.get("full_name"),
                     "html_url": repo.get("html_url"),
                     "description": repo.get("description") or "",
@@ -115,30 +140,18 @@ def collect_candidates(today: dt.date) -> list[dict]:
                     "topics": repo.get("topics", []),
                 }
             )
-    return candidates[:60]
+    return candidates
 
 
-def fallback_digest(candidates: list[dict], *, reason: str | None = None) -> dict:
-    repos = []
-    for repo in candidates[:10]:
-        repos.append(
-            {
-                "full_name": repo["full_name"],
-                "url": repo["html_url"],
-                "description": repo["description"] or "暂无项目描述。",
-                "language": repo["language"],
-                "stars": repo["stargazers_count"],
-                "forks": repo["forks_count"],
-                "reason": "该项目近期关注度较高，值得快速浏览其定位、README 和实现方式。",
-                "tags": (repo.get("topics") or [])[:4] or ["热门项目"],
-            }
-        )
-    return {
-        "title": "GitHub 今日热门项目",
-        "summary": reason
-        or "以下项目来自 GitHub 近期热门仓库数据。由于未配置 OpenAI API，本次使用规则排序生成简版日报。",
-        "repos": repos,
-    }
+def group_candidates(candidates: list[dict]) -> list[tuple[str, list[dict]]]:
+    """把扁平候选列表按 LANGUAGE_GROUPS 顺序分组，省略空分组。"""
+    order = [group["label"] for group in LANGUAGE_GROUPS]
+    buckets: dict[str, list[dict]] = {label: [] for label in order}
+    for candidate in candidates:
+        label = candidate.get("group")
+        if label in buckets:
+            buckets[label].append(candidate)
+    return [(label, buckets[label]) for label in order if buckets[label]]
 
 
 def to_int(value: object, default: int = 0) -> int:
@@ -148,47 +161,70 @@ def to_int(value: object, default: int = 0) -> int:
         return default
 
 
+def repo_from_candidate(candidate: dict, enrichment: dict | None = None) -> dict:
+    """把一个 GitHub 候选 + AI 补充信息合成渲染用的 repo 对象。
+
+    star/forks/语言等硬数据始终以 GitHub 候选为准；AI 只贡献 reason、tags。
+    """
+    enrichment = enrichment or {}
+    tags = enrichment.get("tags") or candidate.get("topics") or ["热门项目"]
+    if not isinstance(tags, list):
+        tags = [str(tags)]
+    return {
+        "full_name": candidate.get("full_name") or "Unknown",
+        "url": enrichment.get("url") or candidate.get("html_url") or "#",
+        "description": enrichment.get("description") or candidate.get("description") or "暂无项目描述。",
+        "language": candidate.get("language") or "Unknown",
+        "stars": to_int(candidate.get("stargazers_count")),
+        "forks": to_int(candidate.get("forks_count")),
+        "reason": enrichment.get("reason") or "该项目近期关注度较高，值得快速浏览其定位、README 和实现方式。",
+        "tags": [str(tag) for tag in tags[:4]],
+    }
+
+
+def fallback_digest(candidates: list[dict], *, reason: str | None = None) -> dict:
+    groups = [
+        {"language": label, "repos": [repo_from_candidate(repo) for repo in repos]}
+        for label, repos in group_candidates(candidates)
+    ]
+    return {
+        "title": "GitHub 分语言热门日报",
+        "summary": reason
+        or "以下项目来自 GitHub 近期各语言热门仓库数据。由于未配置 OpenAI API，本次使用规则排序生成简版日报。",
+        "groups": groups,
+    }
+
+
 def normalize_digest(digest: dict, candidates: list[dict]) -> dict:
-    candidate_by_name = {repo.get("full_name"): repo for repo in candidates if repo.get("full_name")}
-    normalized_repos: list[dict] = []
-    raw_repos = digest.get("repos", [])
-    if not isinstance(raw_repos, list):
-        raw_repos = []
+    # 分组、选取、排序由 collect_candidates 确定性给出；AI 只按 full_name 补充 reason/tags。
+    raw_repos = digest.get("repos")
+    enrichment_by_name: dict[str, dict] = {}
+    if isinstance(raw_repos, list):
+        for raw_repo in raw_repos:
+            if not isinstance(raw_repo, dict):
+                continue
+            full_name = raw_repo.get("full_name") or raw_repo.get("name") or raw_repo.get("repo")
+            if full_name:
+                enrichment_by_name[str(full_name)] = raw_repo
 
-    for raw_repo in raw_repos[:10]:
-        if not isinstance(raw_repo, dict):
-            continue
-        full_name = raw_repo.get("full_name") or raw_repo.get("name") or raw_repo.get("repo")
-        if not full_name:
-            continue
-        candidate = candidate_by_name.get(full_name, {})
-        tags = raw_repo.get("tags") or candidate.get("topics") or ["热门项目"]
-        if not isinstance(tags, list):
-            tags = [str(tags)]
+    groups = [
+        {
+            "language": label,
+            "repos": [repo_from_candidate(repo, enrichment_by_name.get(repo.get("full_name"))) for repo in repos],
+        }
+        for label, repos in group_candidates(candidates)
+    ]
 
-        normalized_repos.append(
-            {
-                "full_name": str(full_name),
-                "url": raw_repo.get("url") or raw_repo.get("html_url") or candidate.get("html_url") or "#",
-                "description": raw_repo.get("description") or candidate.get("description") or "暂无项目描述。",
-                "language": raw_repo.get("language") or candidate.get("language") or "Unknown",
-                "stars": to_int(raw_repo.get("stars"), to_int(candidate.get("stargazers_count"))),
-                "forks": to_int(raw_repo.get("forks"), to_int(candidate.get("forks_count"))),
-                "reason": raw_repo.get("reason") or "该项目近期关注度较高，值得快速浏览其定位、README 和实现方式。",
-                "tags": [str(tag) for tag in tags[:4]],
-            }
-        )
-
-    if not normalized_repos:
+    if not groups:
         return fallback_digest(
             candidates,
             reason="AI 返回内容缺少可渲染的项目列表，本次先使用 GitHub 热度规则生成简版日报。",
         )
 
     return {
-        "title": digest.get("title") or "GitHub 今日热门项目",
-        "summary": digest.get("summary") or "以下项目由 AI 从 GitHub 近期热门仓库中筛选生成。",
-        "repos": normalized_repos,
+        "title": digest.get("title") or "GitHub 分语言热门日报",
+        "summary": digest.get("summary") or "以下项目由 AI 从 GitHub 近期各语言热门仓库中筛选点评。",
+        "groups": groups,
     }
 
 
@@ -280,15 +316,25 @@ def fmt_num(value: int) -> str:
 
 
 def render_html(digest: dict, report_date: dt.date) -> str:
-    repo_items = []
-    for index, repo in enumerate(digest["repos"], start=1):
-        tags = "".join(f"<span>{html.escape(tag)}</span>" for tag in repo.get("tags", []))
-        repo_items.append(
-            f"""
+    groups = digest.get("groups", [])
+    nav_items = []
+    section_items = []
+    for group_index, group in enumerate(groups):
+        label = group.get("language") or "其他"
+        repos = group.get("repos", [])
+        anchor = f"lang-{group_index}"
+        nav_items.append(
+            f'<a class="nav-chip" href="#{anchor}">{html.escape(label)}<em>{len(repos)}</em></a>'
+        )
+        repo_items = []
+        for index, repo in enumerate(repos, start=1):
+            tags = "".join(f"<span>{html.escape(tag)}</span>" for tag in repo.get("tags", []))
+            repo_items.append(
+                f"""
             <article class="repo">
               <div class="rank">{index:02d}</div>
               <div class="repo-body">
-                <h2><a href="{html.escape(repo.get("url") or "#")}">{html.escape(repo.get("full_name") or "Unknown")}</a></h2>
+                <h3><a href="{html.escape(repo.get("url") or "#")}">{html.escape(repo.get("full_name") or "Unknown")}</a></h3>
                 <p class="desc">{html.escape(repo.get("description") or "暂无项目描述。")}</p>
                 <p class="reason">{html.escape(repo.get("reason") or "")}</p>
                 <div class="meta">
@@ -300,7 +346,17 @@ def render_html(digest: dict, report_date: dt.date) -> str:
               </div>
             </article>
             """
+            )
+        section_items.append(
+            f"""
+        <section id="{anchor}" class="lang">
+          <h2 class="lang-title">{html.escape(label)} <span>{len(repos)}</span></h2>
+          {"".join(repo_items)}
+        </section>
+        """
         )
+
+    nav_html = f'<nav class="langnav">{"".join(nav_items)}</nav>' if nav_items else ""
 
     return f"""<!doctype html>
 <html lang="zh-CN">
@@ -356,6 +412,57 @@ def render_html(digest: dict, report_date: dt.date) -> str:
       max-width: 760px;
       margin: 0;
     }}
+    .langnav {{
+      position: sticky;
+      top: 0;
+      z-index: 5;
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      padding: 12px 0;
+      margin-bottom: 8px;
+      background: var(--bg);
+      border-bottom: 1px solid var(--line);
+    }}
+    .nav-chip {{
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 6px 12px;
+      font-size: 14px;
+      font-weight: 650;
+      color: var(--text);
+      text-decoration: none;
+    }}
+    .nav-chip em {{
+      font-style: normal;
+      color: var(--accent);
+      font-size: 12px;
+      background: var(--chip);
+      border-radius: 999px;
+      padding: 1px 7px;
+    }}
+    .lang {{
+      scroll-margin-top: 64px;
+      margin-top: 20px;
+    }}
+    .lang-title {{
+      font-size: 26px;
+      display: flex;
+      align-items: baseline;
+      gap: 10px;
+      margin: 26px 0 8px;
+      padding-bottom: 8px;
+      border-bottom: 2px solid var(--accent);
+    }}
+    .lang-title span {{
+      font-size: 14px;
+      font-weight: 650;
+      color: var(--accent);
+    }}
     .repo {{
       display: grid;
       grid-template-columns: 64px 1fr;
@@ -372,7 +479,7 @@ def render_html(digest: dict, report_date: dt.date) -> str:
       font-size: 24px;
       line-height: 1;
     }}
-    h2 {{
+    .repo h3 {{
       font-size: 22px;
       line-height: 1.24;
       margin: 0 0 8px;
@@ -412,7 +519,8 @@ def render_html(digest: dict, report_date: dt.date) -> str:
       .wrap {{ width: min(100% - 22px, 960px); padding-top: 28px; }}
       .repo {{ grid-template-columns: 1fr; gap: 10px; padding: 16px; }}
       .rank {{ font-size: 18px; }}
-      h2 {{ font-size: 18px; }}
+      .repo h3 {{ font-size: 18px; }}
+      .lang-title {{ font-size: 21px; }}
     }}
   </style>
 </head>
@@ -423,7 +531,8 @@ def render_html(digest: dict, report_date: dt.date) -> str:
       <h1>{html.escape(digest["title"])}</h1>
       <p class="summary">{html.escape(digest["summary"])}</p>
     </header>
-    {"".join(repo_items)}
+    {nav_html}
+    {"".join(section_items)}
     <footer>Generated by GitHub Actions, GitHub API and OpenAI.</footer>
   </main>
 </body>
@@ -461,7 +570,8 @@ def generate_report() -> dict:
         "title": digest["title"],
         "url": report_url(today),
         "path": str(path.relative_to(ROOT)),
-        "repo_count": len(digest.get("repos", [])),
+        "repo_count": sum(len(group.get("repos", [])) for group in digest.get("groups", [])),
+        "languages": [group.get("language") for group in digest.get("groups", [])],
     }
     META_FILE.write_text(json.dumps(meta, ensure_ascii=False, indent=2), encoding="utf-8")
     return meta
