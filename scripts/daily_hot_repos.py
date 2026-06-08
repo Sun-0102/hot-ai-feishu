@@ -673,6 +673,18 @@ def write_report_assets() -> None:
         target.write_text(source.read_text(encoding="utf-8"), encoding="utf-8")
 
 
+def prune_old_reports(today: dt.date) -> None:
+    retention_days = max(1, to_int(os.getenv("REPORT_RETENTION_DAYS"), 2))
+    cutoff = today - dt.timedelta(days=retention_days - 1)
+    for path in REPORT_DIR.glob("*.html"):
+        try:
+            report_date = dt.date.fromisoformat(path.stem)
+        except ValueError:
+            continue
+        if report_date < cutoff:
+            path.unlink()
+
+
 def report_url(report_date: dt.date, *, require_absolute: bool = False) -> str:
     base = os.getenv("REPORT_BASE_URL", "").strip().rstrip("/")
     if not base:
@@ -698,6 +710,7 @@ def generate_report() -> dict:
     write_report_assets()
     path = REPORT_DIR / f"{today.isoformat()}.html"
     path.write_text(render_html(digest, today), encoding="utf-8")
+    prune_old_reports(today)
 
     meta = {
         "date": today.isoformat(),

@@ -29,6 +29,7 @@
 - `HOT_WINDOW_DAYS`：默认 `7`；项目最近多少天内必须有更新
 - `HOT_STARS_MIN`：默认 `50`；新项目最低 star 门槛
 - `HOT_PER_LANGUAGE`：默认 `10`；每个语言区块最多展示多少个项目
+- `REPORT_RETENTION_DAYS`：默认 `2`；只保留最近多少天的 HTML 日报
 
 ## 本地试跑
 
@@ -63,5 +64,6 @@ templates/report.js
 ```
 
 脚本运行时会把 CSS/JS 复制到 `public/assets/`，再生成日报 HTML。
+Actions 会把 `public/` 提交回仓库，并只保留最近 2 天的日报链接。
 
 飞书机器人发送的是这个 HTML 的 GitHub Pages 链接。
