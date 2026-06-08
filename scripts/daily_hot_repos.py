@@ -103,22 +103,26 @@ def github_search(query: str, token: str | None, *, per_page: int = 30) -> list[
 def collect_candidates(today: dt.date) -> list[dict]:
     """按语言各取一批热门候选。
 
-    口径（可用环境变量覆盖）：每门语言 = 近 HOT_WINDOW_DAYS 天有更新(pushed)
-    且 star ≥ HOT_STARS_MIN 的仓库，按 star 降序取前 HOT_PER_LANGUAGE 个。
+    口径（可用环境变量覆盖）：每门语言 = 近 HOT_CREATED_WITHIN_DAYS 天创建
+    且近 HOT_WINDOW_DAYS 天有更新(pushed)，star ≥ HOT_STARS_MIN 的仓库，
+    按 star 降序取前 HOT_PER_LANGUAGE 个。
     达标不足则少于上限，为 0 则该语言不产出候选（区块会被省略）。
     """
     token = os.getenv("GITHUB_TOKEN")
     window_days = to_int(os.getenv("HOT_WINDOW_DAYS"), 7)
-    stars_min = to_int(os.getenv("HOT_STARS_MIN"), 200)
+    created_within_days = to_int(os.getenv("HOT_CREATED_WITHIN_DAYS"), 30)
+    stars_min = to_int(os.getenv("HOT_STARS_MIN"), 50)
     per_language = to_int(os.getenv("HOT_PER_LANGUAGE"), 10)
     since = (today - dt.timedelta(days=window_days)).isoformat()
+    created_since = (today - dt.timedelta(days=created_within_days)).isoformat()
+    created_filter = f" created:>={created_since}" if created_within_days > 0 else ""
 
     seen: set[int] = set()
     candidates: list[dict] = []
     for group in LANGUAGE_GROUPS:
         group_repos: dict[int, dict] = {}
         for language in group["languages"]:
-            query = f'language:"{language}" pushed:>={since} stars:>={stars_min} archived:false'
+            query = f'language:"{language}" pushed:>={since}{created_filter} stars:>={stars_min} archived:false'
             for repo in github_search(query, token, per_page=per_language):
                 repo_id = repo.get("id")
                 if repo_id is None or repo_id in seen or repo_id in group_repos:
@@ -305,6 +309,8 @@ def repo_from_candidate(candidate: dict, enrichment: dict | None = None) -> dict
         "language": candidate.get("language") or "未知",
         "stars": to_int(candidate.get("stargazers_count")),
         "forks": to_int(candidate.get("forks_count")),
+        "created_at": candidate.get("created_at"),
+        "pushed_at": candidate.get("pushed_at"),
         "reason": enrichment.get("reason") or "该项目近期关注度较高，值得快速浏览其定位、README 和实现方式。",
         "why_it_matters": enrichment.get("why_it_matters")
         or "它可能帮助开发者更快理解一个热门方向的工程实践和工具选择。",
@@ -527,6 +533,13 @@ def fmt_num(value: int) -> str:
     return str(value)
 
 
+def fmt_date(value: object) -> str:
+    parsed = parse_iso_datetime(value)
+    if not parsed:
+        return "未知"
+    return parsed.astimezone(TZ).date().isoformat()
+
+
 def render_html(digest: dict, report_date: dt.date) -> str:
     groups = digest.get("groups", [])
     all_repos = [repo for group in groups for repo in group.get("repos", [])]
@@ -597,6 +610,8 @@ def render_html(digest: dict, report_date: dt.date) -> str:
                   <span>{html.escape(repo.get("language") or "未知")}</span>
                   <span>星标 {fmt_num(int(repo.get("stars", 0)))}</span>
                   <span>分叉 {fmt_num(int(repo.get("forks", 0)))}</span>
+                  <span>创建 {fmt_date(repo.get("created_at"))}</span>
+                  <span>更新 {fmt_date(repo.get("pushed_at"))}</span>
                   </div>
                 </div>
                 <p class="desc">{html.escape(repo.get("description") or "暂无项目描述。")}</p>

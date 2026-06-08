@@ -25,6 +25,10 @@
 - `DASHSCOPE_FALLBACK_MODELS`：可选，多个模型用英文逗号分隔；主模型失败时会依次尝试
 - `DASHSCOPE_ENABLE_THINKING`：可选，默认 `false`，设为 `true` 可开启深度思考
 - `DASHSCOPE_TIMEOUT_SECONDS`：可选，默认 `600`；千问 max + 深度思考耗时较长时可以继续调大
+- `HOT_CREATED_WITHIN_DAYS`：默认 `30`；只看最近多少天内创建的新项目，设为 `0` 可关闭创建时间限制
+- `HOT_WINDOW_DAYS`：默认 `7`；项目最近多少天内必须有更新
+- `HOT_STARS_MIN`：默认 `50`；新项目最低 star 门槛
+- `HOT_PER_LANGUAGE`：默认 `10`；每个语言区块最多展示多少个项目
 
 ## 本地试跑
 
