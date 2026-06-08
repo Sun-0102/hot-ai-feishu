@@ -190,7 +190,7 @@ def fallback_digest(candidates: list[dict], *, reason: str | None = None) -> dic
     return {
         "title": "GitHub 分语言热门日报",
         "summary": reason
-        or "以下项目来自 GitHub 近期各语言热门仓库数据。由于未配置 OpenAI API，本次使用规则排序生成简版日报。",
+        or "以下项目来自 GitHub 近期各语言热门仓库数据。由于未配置 DashScope API，本次使用规则排序生成简版日报。",
         "groups": groups,
     }
 
@@ -229,6 +229,15 @@ def normalize_digest(digest: dict, candidates: list[dict]) -> dict:
 
 
 def extract_response_text(data: dict) -> str:
+    output = data.get("output")
+    if isinstance(output, dict):
+        choices = output.get("choices")
+        if isinstance(choices, list) and choices:
+            message = choices[0].get("message", {})
+            content = message.get("content")
+            if isinstance(content, str):
+                return content
+
     choices = data.get("choices")
     if isinstance(choices, list) and choices:
         message = choices[0].get("message", {})
@@ -238,55 +247,83 @@ def extract_response_text(data: dict) -> str:
     if isinstance(data.get("output_text"), str):
         return data["output_text"]
     chunks: list[str] = []
-    for item in data.get("output", []):
+    output_items = data.get("output", [])
+    if not isinstance(output_items, list):
+        return ""
+    for item in output_items:
+        if not isinstance(item, dict):
+            continue
         for content in item.get("content", []):
             if content.get("type") in {"output_text", "text"} and isinstance(content.get("text"), str):
                 chunks.append(content["text"])
     return "\n".join(chunks)
 
 
-def openai_chat_completions_url() -> str:
-    explicit_url = os.getenv("OPENAI_CHAT_COMPLETIONS_URL", "").strip()
+def parse_digest_json(text: str) -> dict:
+    stripped = text.strip()
+    if stripped.startswith("```"):
+        lines = stripped.splitlines()
+        if lines and lines[0].startswith("```"):
+            stripped = "\n".join(lines[1:]).strip()
+        if stripped.endswith("```"):
+            stripped = stripped.rsplit("```", 1)[0].strip()
+
+    try:
+        return json.loads(stripped)
+    except json.JSONDecodeError:
+        start = stripped.find("{")
+        end = stripped.rfind("}")
+        if start >= 0 and end > start:
+            return json.loads(stripped[start : end + 1])
+        raise
+
+
+def dashscope_generation_url() -> str:
+    explicit_url = os.getenv("DASHSCOPE_GENERATION_URL", "").strip()
     if explicit_url:
         return explicit_url.rstrip("/")
 
-    base_url = os.getenv("OPENAI_BASE_URL", "https://api.openai.com/v1").strip().rstrip("/")
-    if base_url.endswith("/chat/completions"):
+    base_url = os.getenv("DASHSCOPE_BASE_URL", "https://dashscope.aliyuncs.com/api/v1").strip().rstrip("/")
+    if base_url.endswith("/services/aigc/text-generation/generation"):
         return base_url
-    if base_url.endswith("/v1"):
-        return f"{base_url}/chat/completions"
-    return f"{base_url}/v1/chat/completions"
+    return f"{base_url}/services/aigc/text-generation/generation"
 
 
 def ai_digest(candidates: list[dict]) -> dict:
-    api_key = os.getenv("OPENAI_API_KEY")
+    api_key = os.getenv("DASHSCOPE_API_KEY")
     if not api_key:
         return fallback_digest(candidates)
 
     prompt = PROMPT_FILE.read_text(encoding="utf-8")
-    models = [os.getenv("OPENAI_MODEL", "gpt-5.4")]
-    fallback_models = os.getenv("OPENAI_FALLBACK_MODELS", "")
+    models = [os.getenv("DASHSCOPE_MODEL", "qwen3.6-max-preview")]
+    fallback_models = os.getenv("DASHSCOPE_FALLBACK_MODELS", "")
     models.extend(model.strip() for model in fallback_models.split(",") if model.strip())
-    chat_url = openai_chat_completions_url()
+    generation_url = dashscope_generation_url()
+    enable_thinking = os.getenv("DASHSCOPE_ENABLE_THINKING", "true").lower() not in {"0", "false", "no"}
     errors: list[str] = []
 
     for model in models:
         payload = {
             "model": model,
-            "messages": [
-                {"role": "system", "content": prompt},
-                {
-                    "role": "user",
-                    "content": "请只返回 JSON，不要输出 Markdown 代码块。\n\n候选项目：\n"
-                    + json.dumps({"candidates": candidates}, ensure_ascii=False),
-                },
-            ],
-            "response_format": {"type": "json_object"},
-            "temperature": 0.4,
+            "input": {
+                "messages": [
+                    {"role": "system", "content": prompt},
+                    {
+                        "role": "user",
+                        "content": "请只返回 JSON，不要输出 Markdown 代码块。\n\n候选项目：\n"
+                        + json.dumps({"candidates": candidates}, ensure_ascii=False),
+                    },
+                ]
+            },
+            "parameters": {
+                "result_format": "message",
+                "enable_thinking": enable_thinking,
+                "temperature": 0.4,
+            },
         }
         try:
             data = request_json(
-                chat_url,
+                generation_url,
                 method="POST",
                 headers={"Authorization": f"Bearer {api_key}"},
                 payload=payload,
@@ -294,8 +331,8 @@ def ai_digest(candidates: list[dict]) -> dict:
             )
             text = extract_response_text(data)
             if not text:
-                raise RuntimeError("OpenAI response did not contain output text")
-            return normalize_digest(json.loads(text), candidates)
+                raise RuntimeError("DashScope response did not contain output text")
+            return normalize_digest(parse_digest_json(text), candidates)
         except Exception as exc:
             errors.append(f"{model}: {exc}")
 
@@ -305,7 +342,7 @@ def ai_digest(candidates: list[dict]) -> dict:
     print("warning: AI digest failed, using fallback digest: " + " | ".join(errors), file=sys.stderr)
     return fallback_digest(
         candidates,
-        reason="AI 中转服务暂时不可用，本次先使用 GitHub 热度规则生成简版日报；后续运行会继续尝试 AI 总结。",
+        reason="DashScope 服务暂时不可用，本次先使用 GitHub 热度规则生成简版日报；后续运行会继续尝试 AI 总结。",
     )
 
 
@@ -533,7 +570,7 @@ def render_html(digest: dict, report_date: dt.date) -> str:
     </header>
     {nav_html}
     {"".join(section_items)}
-    <footer>Generated by GitHub Actions, GitHub API and OpenAI.</footer>
+    <footer>Generated by GitHub Actions, GitHub API and DashScope.</footer>
   </main>
 </body>
 </html>
