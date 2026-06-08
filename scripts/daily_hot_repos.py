@@ -436,9 +436,14 @@ def render_html(digest: dict, report_date: dt.date) -> str:
                 "适合作为技术选型、团队分享或竞品观察素材。",
             ]
         insight_html = "".join(f"<li>{html.escape(item)}</li>" for item in insight_bullets)
+        is_active = group_index == 0
+        active_class = " is-active" if is_active else ""
+        selected = "true" if is_active else "false"
+        hidden_attr = "" if is_active else " hidden"
 
         nav_items.append(
-            f'<a class="nav-chip" href="#{anchor}">{html.escape(label)}<em>{len(repos)}</em></a>'
+            f'<button class="nav-chip{active_class}" type="button" role="tab" aria-selected="{selected}" '
+            f'aria-controls="{anchor}" data-lang-tab="{anchor}">{html.escape(label)}<em>{len(repos)}</em></button>'
         )
         repo_items = []
         for index, repo in enumerate(repos, start=1):
@@ -471,7 +476,7 @@ def render_html(digest: dict, report_date: dt.date) -> str:
             )
         section_items.append(
             f"""
-        <section id="{anchor}" class="lang">
+        <section id="{anchor}" class="lang lang-panel{active_class}" role="tabpanel" data-lang-panel{hidden_attr}>
           <div class="lang-head">
             <div>
               <p class="section-kicker">语言简报</p>
@@ -485,7 +490,7 @@ def render_html(digest: dict, report_date: dt.date) -> str:
         """
         )
 
-    nav_html = f'<nav class="langnav">{"".join(nav_items)}</nav>' if nav_items else ""
+    nav_html = f'<nav class="langnav" role="tablist" aria-label="语言切换">{"".join(nav_items)}</nav>' if nav_items else ""
 
     return f"""<!doctype html>
 <html lang="zh-CN">
@@ -629,6 +634,17 @@ def render_html(digest: dict, report_date: dt.date) -> str:
       font-weight: 650;
       color: var(--text);
       text-decoration: none;
+      font: inherit;
+      cursor: pointer;
+    }}
+    .nav-chip.is-active {{
+      background: var(--text);
+      border-color: var(--text);
+      color: var(--panel);
+    }}
+    .nav-chip:focus-visible {{
+      outline: 3px solid #bfd7ff;
+      outline-offset: 2px;
     }}
     .nav-chip em {{
       font-style: normal;
@@ -638,6 +654,11 @@ def render_html(digest: dict, report_date: dt.date) -> str:
       border-radius: 999px;
       padding: 1px 7px;
     }}
+    .nav-chip.is-active em {{
+      color: var(--text);
+      background: var(--panel);
+    }}
+    .lang-panel[hidden] {{ display: none; }}
     .lang {{
       scroll-margin-top: 64px;
       margin-top: 28px;
@@ -816,6 +837,25 @@ def render_html(digest: dict, report_date: dt.date) -> str:
     {"".join(section_items)}
     <footer>由 GitHub Actions、GitHub API 和 DashScope 自动生成。</footer>
   </main>
+  <script>
+    const tabs = Array.from(document.querySelectorAll("[data-lang-tab]"));
+    const panels = Array.from(document.querySelectorAll("[data-lang-panel]"));
+    tabs.forEach((tab) => {{
+      tab.addEventListener("click", () => {{
+        const target = tab.dataset.langTab;
+        tabs.forEach((item) => {{
+          const active = item === tab;
+          item.classList.toggle("is-active", active);
+          item.setAttribute("aria-selected", String(active));
+        }});
+        panels.forEach((panel) => {{
+          const active = panel.id === target;
+          panel.classList.toggle("is-active", active);
+          panel.hidden = !active;
+        }});
+      }});
+    }});
+  </script>
 </body>
 </html>
 """
