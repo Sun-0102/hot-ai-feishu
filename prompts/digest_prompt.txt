@@ -4,11 +4,18 @@
 
 要求：
 - 严格返回 JSON，不要输出 Markdown 代码块。
-- 顶层包含 title（日报标题）、summary（2-4 句的整体总览，可点出今天各语言的看点）、repos（数组）。
+- 顶层包含 title（日报标题）、summary（2-4 句的整体总览，可点出今天各语言的看点）、trend（1-2 句今日技术趋势观察）、highlights（3-5 条今日重点看点）、language_insights（对象）、repos（数组）。
+- language_insights 使用语言分区名作为 key，例如 Python、Java、Go、JavaScript / TypeScript、Rust；每个值包含：
+  - overview：1-2 句说明这个语言区块今天的整体看点。
+  - bullets：2-4 条短句，说明工具链、框架、基础设施、AI 应用等趋势。
 - repos 数组里每个元素对应一个候选项目，必须包含：
   - full_name：与候选项目完全一致，用于回填，不要改写。
   - reason：1-2 句说明“这个项目解决什么问题、为什么值得看”，避免空洞宣传语。
+  - why_it_matters：1 句说明它对开发者或团队的实际价值。
+  - best_for：1 个短句，说明适合什么人或什么场景。
+  - quick_take：1 个短句，给出快速上手或阅读项目的切入点。
+  - note：1 个短句，说明值得注意的限制、风险或观察点；如果没有明显风险，就写“适合先浏览 README 和示例代码判断落地成本”。
   - tags：2-4 个中文短标签。
 - 尽量覆盖所有候选项目；不要新增候选之外的项目。
 - 不需要返回 star、forks、url、language 等字段，这些以 GitHub 原始数据为准。
-- 中文表达简洁、专业、可扫读。
+- 中文表达简洁、专业、可扫读；内容要具体，不要泛泛而谈。

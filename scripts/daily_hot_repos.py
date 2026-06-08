@@ -184,19 +184,47 @@ def repo_from_candidate(candidate: dict, enrichment: dict | None = None) -> dict
         "stars": to_int(candidate.get("stargazers_count")),
         "forks": to_int(candidate.get("forks_count")),
         "reason": enrichment.get("reason") or "该项目近期关注度较高，值得快速浏览其定位、README 和实现方式。",
+        "why_it_matters": enrichment.get("why_it_matters")
+        or "它可能帮助开发者更快理解一个热门方向的工程实践和工具选择。",
+        "best_for": enrichment.get("best_for") or "适合关注该领域技术选型和落地方案的开发者。",
+        "quick_take": enrichment.get("quick_take") or "建议先看 README、示例和近期提交，判断是否适合自己的场景。",
+        "note": enrichment.get("note") or "适合先浏览 README 和示例代码判断落地成本。",
         "tags": [str(tag) for tag in tags[:4]],
+    }
+
+
+def fallback_group_insight(label: str, repos: list[dict]) -> dict:
+    languages = sorted({repo.get("language") or label for repo in repos})
+    top_repo = repos[0].get("full_name") if repos else "该分区项目"
+    return {
+        "overview": f"{label} 分区今天主要围绕 {', '.join(languages[:3])} 生态中的热门项目展开，适合快速筛查工具链和工程实践变化。",
+        "bullets": [
+            f"{top_repo} 是该分区热度靠前的项目，适合优先浏览定位和示例。",
+            "建议重点关注 README、近期提交频率、issue 活跃度和可复用组件。",
+            "这些项目可作为技术选型、竞品观察或周报素材的快速入口。",
+        ],
     }
 
 
 def fallback_digest(candidates: list[dict], *, reason: str | None = None) -> dict:
     groups = [
-        {"language": label, "repos": [repo_from_candidate(repo) for repo in repos]}
+        {
+            "language": label,
+            "insight": fallback_group_insight(label, repos),
+            "repos": [repo_from_candidate(repo) for repo in repos],
+        }
         for label, repos in group_candidates(candidates)
     ]
     return {
         "title": "GitHub 分语言热门日报",
         "summary": reason
         or "以下项目来自 GitHub 近期各语言热门仓库数据。由于未配置 DashScope API，本次使用规则排序生成简版日报。",
+        "trend": "今天的项目热度主要集中在开发工具、AI 工程化、后端基础设施和语言生态工具链上。",
+        "highlights": [
+            "按语言分区展示，方便快速比较不同技术栈近期活跃项目。",
+            "star、fork、语言等硬数据来自 GitHub，避免 AI 改写核心指标。",
+            "AI 不可用时仍保留完整候选列表，保证日报不断更。",
+        ],
         "groups": groups,
     }
 
@@ -213,9 +241,14 @@ def normalize_digest(digest: dict, candidates: list[dict]) -> dict:
             if full_name:
                 enrichment_by_name[str(full_name)] = raw_repo
 
+    language_insights = digest.get("language_insights")
+    if not isinstance(language_insights, dict):
+        language_insights = {}
+
     groups = [
         {
             "language": label,
+            "insight": language_insights.get(label) if isinstance(language_insights.get(label), dict) else fallback_group_insight(label, repos),
             "repos": [repo_from_candidate(repo, enrichment_by_name.get(repo.get("full_name"))) for repo in repos],
         }
         for label, repos in group_candidates(candidates)
@@ -230,6 +263,10 @@ def normalize_digest(digest: dict, candidates: list[dict]) -> dict:
     return {
         "title": digest.get("title") or "GitHub 分语言热门日报",
         "summary": digest.get("summary") or "以下项目由 AI 从 GitHub 近期各语言热门仓库中筛选点评。",
+        "trend": digest.get("trend") or "今天的热门项目集中在 AI 工程化、开发者工具和后端基础设施等方向。",
+        "highlights": digest.get("highlights")
+        if isinstance(digest.get("highlights"), list)
+        else ["快速浏览各语言近期高热项目。", "优先关注项目定位、活跃度和可落地场景。", "硬数据来自 GitHub，点评由 AI 辅助生成。"],
         "groups": groups,
     }
 
@@ -355,6 +392,8 @@ def ai_digest(candidates: list[dict]) -> dict:
 
 
 def fmt_num(value: int) -> str:
+    if value >= 1_000_000:
+        return f"{value / 1_000_000:.1f}m"
     if value >= 1000:
         return f"{value / 1000:.1f}k"
     return str(value)
@@ -362,12 +401,42 @@ def fmt_num(value: int) -> str:
 
 def render_html(digest: dict, report_date: dt.date) -> str:
     groups = digest.get("groups", [])
+    all_repos = [repo for group in groups for repo in group.get("repos", [])]
+    repo_count = len(all_repos)
+    total_stars = sum(int(repo.get("stars", 0)) for repo in all_repos)
+    total_forks = sum(int(repo.get("forks", 0)) for repo in all_repos)
+    highlights = [str(item) for item in digest.get("highlights", []) if item][:5]
+    if not highlights:
+        highlights = ["快速浏览各语言近期高热项目。", "优先关注项目定位、活跃度和可落地场景。", "硬数据来自 GitHub，点评由 AI 辅助生成。"]
+
+    stats_html = "".join(
+        [
+            f'<div class="stat"><span>项目数</span><strong>{repo_count}</strong></div>',
+            f'<div class="stat"><span>语言区块</span><strong>{len(groups)}</strong></div>',
+            f'<div class="stat"><span>总 Stars</span><strong>{fmt_num(total_stars)}</strong></div>',
+            f'<div class="stat"><span>总 Forks</span><strong>{fmt_num(total_forks)}</strong></div>',
+        ]
+    )
+    highlights_html = "".join(f"<li>{html.escape(item)}</li>" for item in highlights)
+
     nav_items = []
     section_items = []
     for group_index, group in enumerate(groups):
         label = group.get("language") or "其他"
         repos = group.get("repos", [])
         anchor = f"lang-{group_index}"
+        insight = group.get("insight") if isinstance(group.get("insight"), dict) else {}
+        overview = str(insight.get("overview") or f"{label} 分区收录了近期热度靠前的项目，适合快速浏览技术趋势和落地方向。")
+        insight_bullets = insight.get("bullets") if isinstance(insight.get("bullets"), list) else []
+        insight_bullets = [str(item) for item in insight_bullets if item][:4]
+        if not insight_bullets:
+            insight_bullets = [
+                "优先查看项目 README、示例和近期提交。",
+                "结合 star、fork 和 issue 活跃度判断工程成熟度。",
+                "适合作为技术选型、团队分享或竞品观察素材。",
+            ]
+        insight_html = "".join(f"<li>{html.escape(item)}</li>" for item in insight_bullets)
+
         nav_items.append(
             f'<a class="nav-chip" href="#{anchor}">{html.escape(label)}<em>{len(repos)}</em></a>'
         )
@@ -377,16 +446,24 @@ def render_html(digest: dict, report_date: dt.date) -> str:
             repo_items.append(
                 f"""
             <article class="repo">
-              <div class="rank">{index:02d}</div>
+              <div class="rank"><span>{index:02d}</span></div>
               <div class="repo-body">
-                <h3><a href="{html.escape(repo.get("url") or "#")}">{html.escape(repo.get("full_name") or "Unknown")}</a></h3>
-                <p class="desc">{html.escape(repo.get("description") or "暂无项目描述。")}</p>
-                <p class="reason">{html.escape(repo.get("reason") or "")}</p>
-                <div class="meta">
+                <div class="repo-head">
+                  <h3><a href="{html.escape(repo.get("url") or "#")}">{html.escape(repo.get("full_name") or "Unknown")}</a></h3>
+                  <div class="meta">
                   <span>{html.escape(repo.get("language") or "Unknown")}</span>
                   <span>Stars {fmt_num(int(repo.get("stars", 0)))}</span>
                   <span>Forks {fmt_num(int(repo.get("forks", 0)))}</span>
+                  </div>
                 </div>
+                <p class="desc">{html.escape(repo.get("description") or "暂无项目描述。")}</p>
+                <p class="reason">{html.escape(repo.get("reason") or "")}</p>
+                <dl class="detail-list">
+                  <div><dt>价值</dt><dd>{html.escape(repo.get("why_it_matters") or "")}</dd></div>
+                  <div><dt>适合</dt><dd>{html.escape(repo.get("best_for") or "")}</dd></div>
+                  <div><dt>切入</dt><dd>{html.escape(repo.get("quick_take") or "")}</dd></div>
+                  <div><dt>注意</dt><dd>{html.escape(repo.get("note") or "")}</dd></div>
+                </dl>
                 <div class="tags">{tags}</div>
               </div>
             </article>
@@ -395,7 +472,14 @@ def render_html(digest: dict, report_date: dt.date) -> str:
         section_items.append(
             f"""
         <section id="{anchor}" class="lang">
-          <h2 class="lang-title">{html.escape(label)} <span>{len(repos)}</span></h2>
+          <div class="lang-head">
+            <div>
+              <p class="section-kicker">Language Brief</p>
+              <h2>{html.escape(label)} <span>{len(repos)}</span></h2>
+            </div>
+            <p>{html.escape(overview)}</p>
+          </div>
+          <ul class="insight-list">{insight_html}</ul>
           {"".join(repo_items)}
         </section>
         """
@@ -412,14 +496,17 @@ def render_html(digest: dict, report_date: dt.date) -> str:
   <style>
     :root {{
       color-scheme: light;
-      --bg: #f7f7f4;
+      --bg: #f6f7f9;
       --panel: #ffffff;
-      --text: #1f2933;
+      --panel-2: #fdfbf7;
+      --text: #182230;
       --muted: #667085;
-      --line: #d9dee7;
+      --line: #d6dce5;
       --accent: #0f766e;
       --accent-2: #b42318;
-      --chip: #eef6f5;
+      --accent-3: #175cd3;
+      --chip: #eaf5f3;
+      --warm: #fff4e5;
     }}
     * {{ box-sizing: border-box; }}
     body {{
@@ -430,14 +517,18 @@ def render_html(digest: dict, report_date: dt.date) -> str:
       line-height: 1.58;
     }}
     .wrap {{
-      width: min(960px, calc(100% - 32px));
+      width: min(1120px, calc(100% - 32px));
       margin: 0 auto;
-      padding: 42px 0 56px;
+      padding: 34px 0 56px;
     }}
-    header {{
+    .hero {{
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 320px;
+      gap: 28px;
+      align-items: stretch;
+      padding: 30px 0 24px;
       border-bottom: 1px solid var(--line);
-      padding-bottom: 26px;
-      margin-bottom: 24px;
+      margin-bottom: 18px;
     }}
     .date {{
       color: var(--accent);
@@ -446,16 +537,73 @@ def render_html(digest: dict, report_date: dt.date) -> str:
       margin: 0 0 8px;
     }}
     h1 {{
-      font-size: clamp(32px, 5vw, 56px);
-      line-height: 1.05;
+      font-size: 48px;
+      line-height: 1.08;
       margin: 0 0 16px;
       letter-spacing: 0;
     }}
     .summary {{
       color: var(--muted);
       font-size: 17px;
-      max-width: 760px;
       margin: 0;
+    }}
+    .trend {{
+      margin: 16px 0 0;
+      color: #344054;
+      font-size: 16px;
+      border-left: 4px solid var(--accent);
+      padding-left: 12px;
+    }}
+    .stats {{
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      align-content: start;
+    }}
+    .stat {{
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 14px;
+    }}
+    .stat span {{
+      display: block;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 700;
+      margin-bottom: 6px;
+    }}
+    .stat strong {{
+      color: var(--text);
+      font-size: 24px;
+      line-height: 1;
+    }}
+    .brief {{
+      display: grid;
+      grid-template-columns: 180px minmax(0, 1fr);
+      gap: 18px;
+      align-items: start;
+      padding: 18px 0;
+      border-bottom: 1px solid var(--line);
+    }}
+    .brief h2 {{
+      margin: 0;
+      font-size: 18px;
+    }}
+    .brief-list {{
+      margin: 0;
+      padding: 0;
+      list-style: none;
+      display: grid;
+      gap: 9px;
+    }}
+    .brief-list li {{
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-left: 4px solid var(--accent-3);
+      border-radius: 8px;
+      padding: 11px 13px;
+      color: #344054;
     }}
     .langnav {{
       position: sticky;
@@ -492,26 +640,59 @@ def render_html(digest: dict, report_date: dt.date) -> str:
     }}
     .lang {{
       scroll-margin-top: 64px;
-      margin-top: 20px;
+      margin-top: 28px;
     }}
-    .lang-title {{
-      font-size: 26px;
-      display: flex;
-      align-items: baseline;
-      gap: 10px;
-      margin: 26px 0 8px;
-      padding-bottom: 8px;
-      border-bottom: 2px solid var(--accent);
+    .lang-head {{
+      display: grid;
+      grid-template-columns: 280px minmax(0, 1fr);
+      gap: 24px;
+      align-items: start;
+      padding: 20px 0 14px;
+      border-top: 2px solid var(--text);
     }}
-    .lang-title span {{
+    .section-kicker {{
+      color: var(--accent-2);
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      margin: 0 0 5px;
+      text-transform: uppercase;
+    }}
+    .lang-head h2 {{
+      font-size: 28px;
+      line-height: 1.18;
+      margin: 0;
+    }}
+    .lang-head h2 span {{
       font-size: 14px;
       font-weight: 650;
       color: var(--accent);
     }}
+    .lang-head p:last-child {{
+      color: #344054;
+      margin: 0;
+      font-size: 16px;
+    }}
+    .insight-list {{
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+      padding: 0;
+      margin: 0 0 14px;
+      list-style: none;
+    }}
+    .insight-list li {{
+      background: var(--panel-2);
+      border: 1px solid #eadfd0;
+      border-radius: 8px;
+      padding: 12px;
+      color: #53389e;
+      font-size: 14px;
+    }}
     .repo {{
       display: grid;
-      grid-template-columns: 64px 1fr;
-      gap: 18px;
+      grid-template-columns: 70px 1fr;
+      gap: 20px;
       background: var(--panel);
       border: 1px solid var(--line);
       border-radius: 8px;
@@ -519,26 +700,68 @@ def render_html(digest: dict, report_date: dt.date) -> str:
       margin: 14px 0;
     }}
     .rank {{
-      color: var(--accent-2);
+      color: var(--panel);
       font-weight: 800;
-      font-size: 24px;
       line-height: 1;
+    }}
+    .rank span {{
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 48px;
+      height: 48px;
+      background: var(--text);
+      border-radius: 8px;
+      font-size: 18px;
+    }}
+    .repo-head {{
+      display: flex;
+      gap: 14px;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 8px;
     }}
     .repo h3 {{
       font-size: 22px;
       line-height: 1.24;
-      margin: 0 0 8px;
+      margin: 0;
       overflow-wrap: anywhere;
     }}
     a {{ color: var(--text); text-decoration-color: var(--accent); text-underline-offset: 4px; }}
     .desc {{ margin: 0 0 8px; color: #344054; }}
     .reason {{ margin: 0 0 12px; color: var(--text); }}
+    .detail-list {{
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0 18px;
+      border-top: 1px solid var(--line);
+      border-bottom: 1px solid var(--line);
+      margin: 14px 0 12px;
+      padding: 10px 0;
+    }}
+    .detail-list div {{
+      display: grid;
+      grid-template-columns: 44px minmax(0, 1fr);
+      gap: 8px;
+      padding: 7px 0;
+    }}
+    .detail-list dt {{
+      color: var(--accent-2);
+      font-size: 13px;
+      font-weight: 800;
+    }}
+    .detail-list dd {{
+      color: #344054;
+      margin: 0;
+      font-size: 14px;
+    }}
     .meta, .tags {{
       display: flex;
       gap: 8px;
       flex-wrap: wrap;
       align-items: center;
     }}
+    .meta {{ justify-content: flex-end; min-width: 220px; }}
     .meta span {{
       color: var(--muted);
       font-size: 13px;
@@ -562,20 +785,33 @@ def render_html(digest: dict, report_date: dt.date) -> str:
     }}
     @media (max-width: 620px) {{
       .wrap {{ width: min(100% - 22px, 960px); padding-top: 28px; }}
+      .hero, .brief, .lang-head {{ grid-template-columns: 1fr; }}
+      h1 {{ font-size: 34px; }}
+      .stats, .insight-list, .detail-list {{ grid-template-columns: 1fr; }}
       .repo {{ grid-template-columns: 1fr; gap: 10px; padding: 16px; }}
-      .rank {{ font-size: 18px; }}
+      .rank span {{ width: 40px; height: 40px; font-size: 16px; }}
+      .repo-head {{ display: block; }}
+      .meta {{ justify-content: flex-start; min-width: 0; margin-top: 8px; }}
       .repo h3 {{ font-size: 18px; }}
-      .lang-title {{ font-size: 21px; }}
+      .lang-head h2 {{ font-size: 22px; }}
     }}
   </style>
 </head>
 <body>
   <main class="wrap">
-    <header>
-      <p class="date">{report_date.isoformat()}</p>
-      <h1>{html.escape(digest["title"])}</h1>
-      <p class="summary">{html.escape(digest["summary"])}</p>
+    <header class="hero">
+      <div>
+        <p class="date">{report_date.isoformat()}</p>
+        <h1>{html.escape(digest["title"])}</h1>
+        <p class="summary">{html.escape(digest["summary"])}</p>
+        <p class="trend">{html.escape(digest.get("trend") or "")}</p>
+      </div>
+      <div class="stats">{stats_html}</div>
     </header>
+    <section class="brief">
+      <h2>今日重点</h2>
+      <ul class="brief-list">{highlights_html}</ul>
+    </section>
     {nav_html}
     {"".join(section_items)}
     <footer>Generated by GitHub Actions, GitHub API and DashScope.</footer>
