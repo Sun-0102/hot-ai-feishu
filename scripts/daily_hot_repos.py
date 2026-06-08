@@ -283,7 +283,7 @@ def dashscope_generation_url() -> str:
     if explicit_url:
         return explicit_url.rstrip("/")
 
-    base_url = os.getenv("DASHSCOPE_BASE_URL", "https://dashscope.aliyuncs.com/api/v1").strip().rstrip("/")
+    base_url = (os.getenv("DASHSCOPE_BASE_URL", "").strip() or "https://dashscope.aliyuncs.com/api/v1").rstrip("/")
     if base_url.endswith("/services/aigc/text-generation/generation"):
         return base_url
     return f"{base_url}/services/aigc/text-generation/generation"
