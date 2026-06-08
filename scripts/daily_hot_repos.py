@@ -170,6 +170,124 @@ def to_int(value: object, default: int = 0) -> int:
         return default
 
 
+def parse_iso_datetime(value: object) -> dt.datetime | None:
+    if not isinstance(value, str) or not value:
+        return None
+    try:
+        return dt.datetime.fromisoformat(value.replace("Z", "+00:00"))
+    except ValueError:
+        return None
+
+
+def days_since(value: object, now: dt.datetime) -> int | None:
+    parsed = parse_iso_datetime(value)
+    if not parsed:
+        return None
+    return max(0, (now - parsed.astimezone(now.tzinfo or dt.timezone.utc)).days)
+
+
+def quality_class(level: str) -> str:
+    mapping = {
+        "值得重点看": "high",
+        "值得看": "good",
+        "观望": "watch",
+        "水分偏高": "risk",
+    }
+    return mapping.get(level, "watch")
+
+
+def quality_profile(candidate: dict) -> dict:
+    stars = max(0, to_int(candidate.get("stargazers_count")))
+    forks = max(0, to_int(candidate.get("forks_count")))
+    issues = max(0, to_int(candidate.get("open_issues_count")))
+    pushed_days = days_since(candidate.get("pushed_at"), dt.datetime.now(TZ))
+    created_days = days_since(candidate.get("created_at"), dt.datetime.now(TZ))
+
+    score = 50
+    signals: list[str] = []
+
+    if stars >= 10000:
+        score += 10
+    elif stars >= 3000:
+        score += 6
+    elif stars >= 500:
+        score += 3
+
+    if forks >= 1000:
+        score += 15
+        signals.append("fork 较多")
+    elif forks >= 200:
+        score += 10
+        signals.append("有二次复用信号")
+    elif forks < 30 and stars >= 3000:
+        score -= 12
+        signals.append("fork 偏低")
+
+    if stars > 0:
+        ratio = forks / stars
+        if ratio >= 0.08:
+            score += 10
+            signals.append("fork/star 比例高")
+        elif ratio >= 0.03:
+            score += 5
+        elif ratio < 0.01 and stars >= 2000:
+            score -= 8
+            signals.append("围观热度偏多")
+
+    if pushed_days is not None:
+        if pushed_days <= 7:
+            score += 15
+            signals.append("最近仍在更新")
+        elif pushed_days <= 30:
+            score += 8
+        elif pushed_days <= 90:
+            score += 2
+        elif pushed_days > 180:
+            score -= 12
+            signals.append("更新较久")
+    if created_days is not None:
+        if created_days < 30 and stars >= 3000:
+            score -= 8
+            signals.append("爆火较快")
+        elif created_days > 365:
+            score += 4
+
+    if issues >= 200:
+        score -= 8
+        signals.append("待处理 issue 较多")
+    elif issues <= 20:
+        score += 3
+
+    score = max(0, min(100, score))
+    if score >= 82:
+        level = "值得重点看"
+        risk = "低"
+        action = "优先试跑"
+    elif score >= 65:
+        level = "值得看"
+        risk = "低" if score >= 72 else "中"
+        action = "收藏跟踪"
+    elif score >= 48:
+        level = "观望"
+        risk = "中"
+        action = "先观望"
+    else:
+        level = "水分偏高"
+        risk = "高"
+        action = "低优先级"
+
+    if not signals:
+        signals = ["信号平衡，适合结合 README 和示例进一步判断"]
+
+    return {
+        "quality_score": score,
+        "quality_level": level,
+        "hype_risk": risk,
+        "quality_reason": "；".join(signals[:3]),
+        "action": action,
+    }
+
+
 def repo_from_candidate(candidate: dict, enrichment: dict | None = None) -> dict:
     """把一个 GitHub 候选 + AI 补充信息合成渲染用的 repo 对象。
 
@@ -179,6 +297,7 @@ def repo_from_candidate(candidate: dict, enrichment: dict | None = None) -> dict
     tags = enrichment.get("tags") or candidate.get("topics") or ["热门项目"]
     if not isinstance(tags, list):
         tags = [str(tags)]
+    base_quality = quality_profile(candidate)
     return {
         "full_name": candidate.get("full_name") or "未知项目",
         "url": enrichment.get("url") or candidate.get("html_url") or "#",
@@ -192,6 +311,12 @@ def repo_from_candidate(candidate: dict, enrichment: dict | None = None) -> dict
         "best_for": enrichment.get("best_for") or "适合关注该领域技术选型和落地方案的开发者。",
         "quick_take": enrichment.get("quick_take") or "建议先看 README、示例和近期提交，判断是否适合自己的场景。",
         "note": enrichment.get("note") or "适合先浏览 README 和示例代码判断落地成本。",
+        "quality_level": enrichment.get("quality_level") or base_quality["quality_level"],
+        "quality_score": to_int(enrichment.get("quality_score"), base_quality["quality_score"]),
+        "hype_risk": enrichment.get("hype_risk") or base_quality["hype_risk"],
+        "quality_reason": enrichment.get("quality_reason") or base_quality["quality_reason"],
+        "action": enrichment.get("action") or base_quality["action"],
+        "quality_class": quality_class(str(enrichment.get("quality_level") or base_quality["quality_level"])),
         "tags": [str(tag) for tag in tags[:4]],
     }
 
@@ -408,6 +533,8 @@ def render_html(digest: dict, report_date: dt.date) -> str:
     repo_count = len(all_repos)
     total_stars = sum(int(repo.get("stars", 0)) for repo in all_repos)
     total_forks = sum(int(repo.get("forks", 0)) for repo in all_repos)
+    worth_count = sum(1 for repo in all_repos if str(repo.get("quality_level")) in {"值得重点看", "值得看"})
+    risk_count = sum(1 for repo in all_repos if str(repo.get("quality_level")) == "水分偏高")
     highlights = [str(item) for item in digest.get("highlights", []) if item][:5]
     if not highlights:
         highlights = ["快速浏览各语言近期高热项目。", "优先关注项目定位、活跃度和可落地场景。", "硬数据来自 GitHub，点评由 AI 辅助生成。"]
@@ -416,6 +543,8 @@ def render_html(digest: dict, report_date: dt.date) -> str:
         [
             f'<div class="stat"><span>项目数</span><strong>{repo_count}</strong></div>',
             f'<div class="stat"><span>语言区块</span><strong>{len(groups)}</strong></div>',
+            f'<div class="stat"><span>值得看</span><strong>{worth_count}</strong></div>',
+            f'<div class="stat"><span>水分偏高</span><strong>{risk_count}</strong></div>',
             f'<div class="stat"><span>总星标</span><strong>{fmt_num(total_stars)}</strong></div>',
             f'<div class="stat"><span>总分叉</span><strong>{fmt_num(total_forks)}</strong></div>',
         ]
@@ -451,6 +580,12 @@ def render_html(digest: dict, report_date: dt.date) -> str:
         repo_items = []
         for index, repo in enumerate(repos, start=1):
             tags = "".join(f"<span>{html.escape(tag)}</span>" for tag in repo.get("tags", []))
+            quality_level = str(repo.get("quality_level") or "观望")
+            quality_score = to_int(repo.get("quality_score"))
+            quality_class_name = html.escape(str(repo.get("quality_class") or quality_class(quality_level)))
+            quality_reason = html.escape(str(repo.get("quality_reason") or ""))
+            quality_action = html.escape(str(repo.get("action") or ""))
+            quality_risk = html.escape(str(repo.get("hype_risk") or "中"))
             repo_items.append(
                 f"""
             <article class="repo">
@@ -466,6 +601,13 @@ def render_html(digest: dict, report_date: dt.date) -> str:
                 </div>
                 <p class="desc">{html.escape(repo.get("description") or "暂无项目描述。")}</p>
                 <p class="reason">{html.escape(repo.get("reason") or "")}</p>
+                <div class="quality quality-{quality_class_name}">
+                  <div class="quality-item"><span>含金量</span><strong>{html.escape(quality_level)}</strong></div>
+                  <div class="quality-item"><span>质量分</span><strong>{quality_score}</strong></div>
+                  <div class="quality-item"><span>水分风险</span><strong>{quality_risk}</strong></div>
+                  <div class="quality-item"><span>建议</span><strong>{quality_action}</strong></div>
+                </div>
+                <p class="quality-reason">{quality_reason}</p>
                 <dl class="detail-list">
                   <div><dt>价值</dt><dd>{html.escape(repo.get("why_it_matters") or "")}</dd></div>
                   <div><dt>适合</dt><dd>{html.escape(repo.get("best_for") or "")}</dd></div>
