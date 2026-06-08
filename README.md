@@ -23,7 +23,8 @@
 
 - `DASHSCOPE_MODEL`：默认 `qwen3.6-max-preview`
 - `DASHSCOPE_FALLBACK_MODELS`：可选，多个模型用英文逗号分隔；主模型失败时会依次尝试
-- `DASHSCOPE_ENABLE_THINKING`：可选，默认 `true`，设为 `false` 可关闭深度思考
+- `DASHSCOPE_ENABLE_THINKING`：可选，默认 `false`，设为 `true` 可开启深度思考
+- `DASHSCOPE_TIMEOUT_SECONDS`：可选，默认 `600`；千问 max + 深度思考耗时较长时可以继续调大
 
 ## 本地试跑
 

@@ -43,6 +43,7 @@ def request_json(
     payload: dict | None = None,
     retries: int = 0,
     allow_empty_response: bool = False,
+    timeout: int = 45,
 ) -> dict:
     body = None
     final_headers = {"User-Agent": "github-hot-ai-feishu"}
@@ -56,7 +57,7 @@ def request_json(
     for attempt in range(retries + 1):
         request = urllib.request.Request(url, data=body, headers=final_headers, method=method)
         try:
-            with urllib.request.urlopen(request, timeout=45) as response:
+            with urllib.request.urlopen(request, timeout=timeout) as response:
                 detail = response.read().decode("utf-8", errors="replace").strip()
                 if not detail:
                     if allow_empty_response:
@@ -72,6 +73,11 @@ def request_json(
                 time.sleep(2 * (attempt + 1))
                 continue
             raise RuntimeError(f"{method} {url} failed: HTTP {exc.code}: {detail}") from exc
+        except TimeoutError as exc:
+            if attempt < retries:
+                time.sleep(2 * (attempt + 1))
+                continue
+            raise RuntimeError(f"{method} {url} timed out after {timeout}s") from exc
 
 
 def github_search(query: str, token: str | None, *, per_page: int = 30) -> list[dict]:
@@ -299,7 +305,8 @@ def ai_digest(candidates: list[dict]) -> dict:
     fallback_models = os.getenv("DASHSCOPE_FALLBACK_MODELS", "")
     models.extend(model.strip() for model in fallback_models.split(",") if model.strip())
     generation_url = dashscope_generation_url()
-    enable_thinking = os.getenv("DASHSCOPE_ENABLE_THINKING", "true").lower() not in {"0", "false", "no"}
+    enable_thinking = os.getenv("DASHSCOPE_ENABLE_THINKING", "false").lower() not in {"0", "false", "no"}
+    timeout = to_int(os.getenv("DASHSCOPE_TIMEOUT_SECONDS"), 600)
     errors: list[str] = []
 
     for model in models:
@@ -328,6 +335,7 @@ def ai_digest(candidates: list[dict]) -> dict:
                 headers={"Authorization": f"Bearer {api_key}"},
                 payload=payload,
                 retries=2,
+                timeout=timeout,
             )
             text = extract_response_text(data)
             if not text:

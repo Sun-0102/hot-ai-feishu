@@ -39,7 +39,8 @@ jobs:
           DASHSCOPE_GENERATION_URL: ${{ secrets.DASHSCOPE_GENERATION_URL }}
           DASHSCOPE_MODEL: ${{ vars.DASHSCOPE_MODEL || 'qwen3.6-max-preview' }}
           DASHSCOPE_FALLBACK_MODELS: ${{ vars.DASHSCOPE_FALLBACK_MODELS }}
-          DASHSCOPE_ENABLE_THINKING: ${{ vars.DASHSCOPE_ENABLE_THINKING || 'true' }}
+          DASHSCOPE_ENABLE_THINKING: ${{ vars.DASHSCOPE_ENABLE_THINKING || 'false' }}
+          DASHSCOPE_TIMEOUT_SECONDS: ${{ vars.DASHSCOPE_TIMEOUT_SECONDS || '600' }}
           REPORT_BASE_URL: https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/
         run: python scripts/daily_hot_repos.py --no-send
 
