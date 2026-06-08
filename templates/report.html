@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>$page_title</title>
+  <link rel="stylesheet" href="$asset_prefix/report.css">
+  <script src="$asset_prefix/report.js" defer></script>
+</head>
+<body>
+  <main class="wrap">
+    <header class="hero">
+      <div>
+        <p class="date">$report_date</p>
+        <h1>$title</h1>
+        <p class="summary">$summary</p>
+        <p class="trend">$trend</p>
+      </div>
+      <div class="stats">$stats_html</div>
+    </header>
+    <section class="brief">
+      <h2>今日重点</h2>
+      <ul class="brief-list">$highlights_html</ul>
+    </section>
+    $nav_html
+    $sections_html
+    <footer>由 GitHub Actions、GitHub API 和 DashScope 自动生成。</footer>
+  </main>
+</body>
+</html>

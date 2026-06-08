@@ -15,11 +15,14 @@ import time
 import urllib.error
 import urllib.parse
 import urllib.request
+from string import Template
 from zoneinfo import ZoneInfo
 
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
 REPORT_DIR = ROOT / "public" / "reports"
+ASSET_DIR = ROOT / "public" / "assets"
+TEMPLATE_DIR = ROOT / "templates"
 PROMPT_FILE = ROOT / "prompts" / "digest_prompt.txt"
 META_FILE = ROOT / "public" / "latest-report.json"
 TZ = ZoneInfo("Asia/Shanghai")
@@ -492,373 +495,29 @@ def render_html(digest: dict, report_date: dt.date) -> str:
 
     nav_html = f'<nav class="langnav" role="tablist" aria-label="语言切换">{"".join(nav_items)}</nav>' if nav_items else ""
 
-    return f"""<!doctype html>
-<html lang="zh-CN">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>{html.escape(digest["title"])} - {report_date.isoformat()}</title>
-  <style>
-    :root {{
-      color-scheme: light;
-      --bg: #f6f7f9;
-      --panel: #ffffff;
-      --panel-2: #fdfbf7;
-      --text: #182230;
-      --muted: #667085;
-      --line: #d6dce5;
-      --accent: #0f766e;
-      --accent-2: #b42318;
-      --accent-3: #175cd3;
-      --chip: #eaf5f3;
-      --warm: #fff4e5;
-    }}
-    * {{ box-sizing: border-box; }}
-    body {{
-      margin: 0;
-      background: var(--bg);
-      color: var(--text);
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
-      line-height: 1.58;
-    }}
-    .wrap {{
-      width: min(1120px, calc(100% - 32px));
-      margin: 0 auto;
-      padding: 34px 0 56px;
-    }}
-    .hero {{
-      display: grid;
-      grid-template-columns: minmax(0, 1fr) 320px;
-      gap: 28px;
-      align-items: stretch;
-      padding: 30px 0 24px;
-      border-bottom: 1px solid var(--line);
-      margin-bottom: 18px;
-    }}
-    .date {{
-      color: var(--accent);
-      font-weight: 700;
-      font-size: 14px;
-      margin: 0 0 8px;
-    }}
-    h1 {{
-      font-size: 48px;
-      line-height: 1.08;
-      margin: 0 0 16px;
-      letter-spacing: 0;
-    }}
-    .summary {{
-      color: var(--muted);
-      font-size: 17px;
-      margin: 0;
-    }}
-    .trend {{
-      margin: 16px 0 0;
-      color: #344054;
-      font-size: 16px;
-      border-left: 4px solid var(--accent);
-      padding-left: 12px;
-    }}
-    .stats {{
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 10px;
-      align-content: start;
-    }}
-    .stat {{
-      background: var(--panel);
-      border: 1px solid var(--line);
-      border-radius: 8px;
-      padding: 14px;
-    }}
-    .stat span {{
-      display: block;
-      color: var(--muted);
-      font-size: 12px;
-      font-weight: 700;
-      margin-bottom: 6px;
-    }}
-    .stat strong {{
-      color: var(--text);
-      font-size: 24px;
-      line-height: 1;
-    }}
-    .brief {{
-      display: grid;
-      grid-template-columns: 180px minmax(0, 1fr);
-      gap: 18px;
-      align-items: start;
-      padding: 18px 0;
-      border-bottom: 1px solid var(--line);
-    }}
-    .brief h2 {{
-      margin: 0;
-      font-size: 18px;
-    }}
-    .brief-list {{
-      margin: 0;
-      padding: 0;
-      list-style: none;
-      display: grid;
-      gap: 9px;
-    }}
-    .brief-list li {{
-      background: var(--panel);
-      border: 1px solid var(--line);
-      border-left: 4px solid var(--accent-3);
-      border-radius: 8px;
-      padding: 11px 13px;
-      color: #344054;
-    }}
-    .langnav {{
-      position: sticky;
-      top: 0;
-      z-index: 5;
-      display: flex;
-      gap: 8px;
-      flex-wrap: wrap;
-      padding: 12px 0;
-      margin-bottom: 8px;
-      background: var(--bg);
-      border-bottom: 1px solid var(--line);
-    }}
-    .nav-chip {{
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      background: var(--panel);
-      border: 1px solid var(--line);
-      border-radius: 999px;
-      padding: 6px 12px;
-      font-size: 14px;
-      font-weight: 650;
-      color: var(--text);
-      text-decoration: none;
-      font: inherit;
-      cursor: pointer;
-    }}
-    .nav-chip.is-active {{
-      background: var(--text);
-      border-color: var(--text);
-      color: var(--panel);
-    }}
-    .nav-chip:focus-visible {{
-      outline: 3px solid #bfd7ff;
-      outline-offset: 2px;
-    }}
-    .nav-chip em {{
-      font-style: normal;
-      color: var(--accent);
-      font-size: 12px;
-      background: var(--chip);
-      border-radius: 999px;
-      padding: 1px 7px;
-    }}
-    .nav-chip.is-active em {{
-      color: var(--text);
-      background: var(--panel);
-    }}
-    .lang-panel[hidden] {{ display: none; }}
-    .lang {{
-      scroll-margin-top: 64px;
-      margin-top: 28px;
-    }}
-    .lang-head {{
-      display: grid;
-      grid-template-columns: 280px minmax(0, 1fr);
-      gap: 24px;
-      align-items: start;
-      padding: 20px 0 14px;
-      border-top: 2px solid var(--text);
-    }}
-    .section-kicker {{
-      color: var(--accent-2);
-      font-size: 12px;
-      font-weight: 800;
-      letter-spacing: 0.08em;
-      margin: 0 0 5px;
-      text-transform: uppercase;
-    }}
-    .lang-head h2 {{
-      font-size: 28px;
-      line-height: 1.18;
-      margin: 0;
-    }}
-    .lang-head h2 span {{
-      font-size: 14px;
-      font-weight: 650;
-      color: var(--accent);
-    }}
-    .lang-head p:last-child {{
-      color: #344054;
-      margin: 0;
-      font-size: 16px;
-    }}
-    .insight-list {{
-      display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap: 10px;
-      padding: 0;
-      margin: 0 0 14px;
-      list-style: none;
-    }}
-    .insight-list li {{
-      background: var(--panel-2);
-      border: 1px solid #eadfd0;
-      border-radius: 8px;
-      padding: 12px;
-      color: #53389e;
-      font-size: 14px;
-    }}
-    .repo {{
-      display: grid;
-      grid-template-columns: 70px 1fr;
-      gap: 20px;
-      background: var(--panel);
-      border: 1px solid var(--line);
-      border-radius: 8px;
-      padding: 20px;
-      margin: 14px 0;
-    }}
-    .rank {{
-      color: var(--panel);
-      font-weight: 800;
-      line-height: 1;
-    }}
-    .rank span {{
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      width: 48px;
-      height: 48px;
-      background: var(--text);
-      border-radius: 8px;
-      font-size: 18px;
-    }}
-    .repo-head {{
-      display: flex;
-      gap: 14px;
-      justify-content: space-between;
-      align-items: flex-start;
-      margin-bottom: 8px;
-    }}
-    .repo h3 {{
-      font-size: 22px;
-      line-height: 1.24;
-      margin: 0;
-      overflow-wrap: anywhere;
-    }}
-    a {{ color: var(--text); text-decoration-color: var(--accent); text-underline-offset: 4px; }}
-    .desc {{ margin: 0 0 8px; color: #344054; }}
-    .reason {{ margin: 0 0 12px; color: var(--text); }}
-    .detail-list {{
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 0 18px;
-      border-top: 1px solid var(--line);
-      border-bottom: 1px solid var(--line);
-      margin: 14px 0 12px;
-      padding: 10px 0;
-    }}
-    .detail-list div {{
-      display: grid;
-      grid-template-columns: 44px minmax(0, 1fr);
-      gap: 8px;
-      padding: 7px 0;
-    }}
-    .detail-list dt {{
-      color: var(--accent-2);
-      font-size: 13px;
-      font-weight: 800;
-    }}
-    .detail-list dd {{
-      color: #344054;
-      margin: 0;
-      font-size: 14px;
-    }}
-    .meta, .tags {{
-      display: flex;
-      gap: 8px;
-      flex-wrap: wrap;
-      align-items: center;
-    }}
-    .meta {{ justify-content: flex-end; min-width: 220px; }}
-    .meta span {{
-      color: var(--muted);
-      font-size: 13px;
-      border-right: 1px solid var(--line);
-      padding-right: 8px;
-    }}
-    .meta span:last-child {{ border-right: 0; }}
-    .tags {{ margin-top: 12px; }}
-    .tags span {{
-      background: var(--chip);
-      color: var(--accent);
-      border-radius: 999px;
-      padding: 4px 10px;
-      font-size: 13px;
-      font-weight: 650;
-    }}
-    footer {{
-      color: var(--muted);
-      font-size: 13px;
-      margin-top: 28px;
-    }}
-    @media (max-width: 620px) {{
-      .wrap {{ width: min(100% - 22px, 960px); padding-top: 28px; }}
-      .hero, .brief, .lang-head {{ grid-template-columns: 1fr; }}
-      h1 {{ font-size: 34px; }}
-      .stats, .insight-list, .detail-list {{ grid-template-columns: 1fr; }}
-      .repo {{ grid-template-columns: 1fr; gap: 10px; padding: 16px; }}
-      .rank span {{ width: 40px; height: 40px; font-size: 16px; }}
-      .repo-head {{ display: block; }}
-      .meta {{ justify-content: flex-start; min-width: 0; margin-top: 8px; }}
-      .repo h3 {{ font-size: 18px; }}
-      .lang-head h2 {{ font-size: 22px; }}
-    }}
-  </style>
-</head>
-<body>
-  <main class="wrap">
-    <header class="hero">
-      <div>
-        <p class="date">{report_date.isoformat()}</p>
-        <h1>{html.escape(digest["title"])}</h1>
-        <p class="summary">{html.escape(digest["summary"])}</p>
-        <p class="trend">{html.escape(digest.get("trend") or "")}</p>
-      </div>
-      <div class="stats">{stats_html}</div>
-    </header>
-    <section class="brief">
-      <h2>今日重点</h2>
-      <ul class="brief-list">{highlights_html}</ul>
-    </section>
-    {nav_html}
-    {"".join(section_items)}
-    <footer>由 GitHub Actions、GitHub API 和 DashScope 自动生成。</footer>
-  </main>
-  <script>
-    const tabs = Array.from(document.querySelectorAll("[data-lang-tab]"));
-    const panels = Array.from(document.querySelectorAll("[data-lang-panel]"));
-    tabs.forEach((tab) => {{
-      tab.addEventListener("click", () => {{
-        const target = tab.dataset.langTab;
-        tabs.forEach((item) => {{
-          const active = item === tab;
-          item.classList.toggle("is-active", active);
-          item.setAttribute("aria-selected", String(active));
-        }});
-        panels.forEach((panel) => {{
-          const active = panel.id === target;
-          panel.classList.toggle("is-active", active);
-          panel.hidden = !active;
-        }});
-      }});
-    }});
-  </script>
-</body>
-</html>
-"""
+    template = Template((TEMPLATE_DIR / "report.html").read_text(encoding="utf-8"))
+    return template.substitute(
+        {
+            "page_title": f"{html.escape(digest['title'])} - {report_date.isoformat()}",
+            "asset_prefix": "../assets",
+            "report_date": report_date.isoformat(),
+            "title": html.escape(digest["title"]),
+            "summary": html.escape(digest["summary"]),
+            "trend": html.escape(digest.get("trend") or ""),
+            "stats_html": stats_html,
+            "highlights_html": highlights_html,
+            "nav_html": nav_html,
+            "sections_html": "".join(section_items),
+        }
+    )
+
+
+def write_report_assets() -> None:
+    ASSET_DIR.mkdir(parents=True, exist_ok=True)
+    for filename in ("report.css", "report.js"):
+        source = TEMPLATE_DIR / filename
+        target = ASSET_DIR / filename
+        target.write_text(source.read_text(encoding="utf-8"), encoding="utf-8")
 
 
 def report_url(report_date: dt.date, *, require_absolute: bool = False) -> str:
@@ -883,6 +542,7 @@ def generate_report() -> dict:
     digest = ai_digest(candidates)
 
     REPORT_DIR.mkdir(parents=True, exist_ok=True)
+    write_report_assets()
     path = REPORT_DIR / f"{today.isoformat()}.html"
     path.write_text(render_html(digest, today), encoding="utf-8")
 

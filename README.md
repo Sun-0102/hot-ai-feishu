@@ -50,4 +50,14 @@ HTML 日报会生成到：
 public/reports/YYYY-MM-DD.html
 ```
 
+页面模板和资源在：
+
+```text
+templates/report.html
+templates/report.css
+templates/report.js
+```
+
+脚本运行时会把 CSS/JS 复制到 `public/assets/`，再生成日报 HTML。
+
 飞书机器人发送的是这个 HTML 的 GitHub Pages 链接。
