@@ -526,10 +526,6 @@ def ai_digest(candidates: list[dict]) -> dict:
 
 
 def fmt_num(value: int) -> str:
-    if value >= 100_000_000:
-        return f"{value / 100_000_000:.1f}".rstrip("0").rstrip(".") + "亿"
-    if value >= 10_000:
-        return f"{value / 10_000:.1f}".rstrip("0").rstrip(".") + "万"
     return str(value)
 
 
