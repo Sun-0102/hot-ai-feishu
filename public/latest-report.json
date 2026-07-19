@@ -1,8 +1,8 @@
 {
-  "date": "2026-07-18",
-  "title": "AI Agent 基础设施爆发：从沙箱、记忆层到 MCP 调试工具",
-  "url": "https://Sun-0102.github.io/hot-ai-feishu/reports/2026-07-18.html",
-  "path": "public/reports/2026-07-18.html",
+  "date": "2026-07-19",
+  "title": "AI Agent 基础设施爆发：从沙箱隔离到记忆层，Rust/Go 引领工具链革新",
+  "url": "https://Sun-0102.github.io/hot-ai-feishu/reports/2026-07-19.html",
+  "path": "public/reports/2026-07-19.html",
   "repo_count": 50,
   "languages": [
     "Python",
