@@ -1,9 +1,9 @@
 {
-  "date": "2026-07-22",
-  "title": "2026-07-22 技术日报：Agent 基础设施爆发与 Rust 前端新势力",
-  "url": "https://Sun-0102.github.io/hot-ai-feishu/reports/2026-07-22.html",
-  "path": "public/reports/2026-07-22.html",
-  "repo_count": 49,
+  "date": "2026-07-23",
+  "title": "AI Agent 基础设施爆发：从沙箱隔离到记忆持久化",
+  "url": "https://Sun-0102.github.io/hot-ai-feishu/reports/2026-07-23.html",
+  "path": "public/reports/2026-07-23.html",
+  "repo_count": 48,
   "languages": [
     "Python",
     "Java",
