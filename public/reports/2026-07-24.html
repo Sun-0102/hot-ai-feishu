@@ -1,0 +1,1594 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>AI Agent 基础设施爆发：从内存管理到安全沙箱 - 2026-07-24</title>
+  <link rel="stylesheet" href="../assets/report.css">
+  <script src="../assets/report.js" defer></script>
+</head>
+<body>
+  <main class="wrap">
+    <header class="hero">
+      <div>
+        <p class="date">2026-07-24</p>
+        <h1>AI Agent 基础设施爆发：从内存管理到安全沙箱</h1>
+        <p class="summary">今日 GitHub 热点集中在 AI Agent 的基础设施层，Go 和 Rust 语言涌现出大量针对 Agent 记忆、调试和安全隔离的工具。Python 领域则聚焦于多模态内容生成（如图像转 Three.js）及视频分析能力的增强。整体趋势显示，开发者正从单纯调用 LLM 转向构建更稳健、可观测且具备长期记忆的 Agent 运行时环境。</p>
+        <p class="trend">Agent 开发进入“工程化深水区”，重点解决上下文持久化、执行过程可视化及安全沙箱隔离问题；同时，多模态生成能力正通过代码化（Code-only）方式降低前端集成门槛。</p>
+      </div>
+      <div class="stats"><div class="stat"><span>项目数</span><strong>47</strong></div><div class="stat"><span>语言区块</span><strong>5</strong></div><div class="stat"><span>值得看</span><strong>38</strong></div><div class="stat"><span>水分偏高</span><strong>1</strong></div><div class="stat"><span>总星标</span><strong>102469</strong></div><div class="stat"><span>总分叉</span><strong>23252</strong></div></div>
+    </header>
+    <section class="brief">
+      <h2>今日重点</h2>
+      <ul class="brief-list"><li>Rust/Go 主导 Agent 工具链：出现多个零依赖二进制工具，用于 Agent 记忆检索、MCP 流量监控及微虚拟机沙箱。</li><li>多模态生成代码化：Python 项目实现将图片直接转换为可动画的 Three.js 代码，而非仅生成模型文件，极大提升 Web 端集成效率。</li><li>安全与红队测试：TypeScript 领域出现自主红队测试平台，反映对 AI 应用安全性评估的需求日益增长。</li><li>本地化与隐私优先：多个项目强调本地运行、无云端依赖，特别是在视频分析和敏感数据处理场景。</li></ul>
+    </section>
+    <nav class="langnav" role="tablist" aria-label="语言切换"><button class="nav-chip is-active" type="button" role="tab" aria-selected="true" aria-controls="lang-0" data-lang-tab="lang-0">Python<em>10</em></button><button class="nav-chip" type="button" role="tab" aria-selected="false" aria-controls="lang-1" data-lang-tab="lang-1">Java<em>7</em></button><button class="nav-chip" type="button" role="tab" aria-selected="false" aria-controls="lang-2" data-lang-tab="lang-2">Go<em>10</em></button><button class="nav-chip" type="button" role="tab" aria-selected="false" aria-controls="lang-3" data-lang-tab="lang-3">JavaScript / TypeScript<em>10</em></button><button class="nav-chip" type="button" role="tab" aria-selected="false" aria-controls="lang-4" data-lang-tab="lang-4">Rust<em>10</em></button></nav>
+    
+        <section id="lang-0" class="lang lang-panel is-active" role="tabpanel" data-lang-panel>
+          <div class="lang-head">
+            <div>
+              <p class="section-kicker">语言简报</p>
+              <h2>Python <span>10</span></h2>
+            </div>
+            <p>Python 社区聚焦于多模态内容的程序化生成与视频语义理解，同时伴随大量针对特定 LLM（如 Codex/Claude）的提示词工程与插件开发。</p>
+          </div>
+          <ul class="insight-list"><li>图像到代码：img2threejs 等项目实现从静态图到可交互 WebGL 代码的直接转换。</li><li>视频语义分析：claude-real-video 提供本地化的视频帧提取与转录，增强 LLM 的视频理解能力。</li><li>Agent 运行时优化：shepherd 提出基于 Git 式追踪的可逆 Agent 执行环境，支持回放与分叉。</li><li>提示词与越狱：存在针对新版模型的提示词测试包，反映社区对模型边界探索的热情。</li></ul>
+          
+            <article class="repo">
+              <div class="rank"><span>01</span></div>
+              <div class="repo-body">
+                <div class="repo-head">
+                  <h3><a href="https://github.com/x4gKing/X4G">x4gKing/X4G</a></h3>
+                  <div class="meta">
+                  <span>Python</span>
+                  <span>星标 6519</span>
+                  <span>分叉 11974</span>
+                  <span>创建 2026-07-04</span>
+                  <span>更新 2026-07-21</span>
+                  </div>
+                </div>
+                <p class="desc">暂无项目描述。</p>
+                <p class="reason">星标极高但描述为空，疑似为某种聚合工具或镜像站，需警惕其实际用途与安全性。</p>
+                <div class="quality quality-risk">
+                  <div class="quality-item"><span>含金量</span><strong>水分偏高</strong></div>
+                  <div class="quality-item"><span>质量分</span><strong>30</strong></div>
+                  <div class="quality-item"><span>水分风险</span><strong>高</strong></div>
+                  <div class="quality-item"><span>建议</span><strong>低优先级</strong></div>
+                </div>
+                <p class="quality-reason">虽然 Star 数过万，但 Description 为空且 Topics 缺失，不符合高质量开源项目的常规特征，极可能是引流或刷量项目。</p>
+                <dl class="detail-list">
+                  <div><dt>价值</dt><dd>高关注度可能意味着其解决了某个痛点，但也可能是刷星或恶意软件，需谨慎甄别。</dd></div>
+                  <div><dt>适合</dt><dd>好奇心强的探索者，或需要验证其真实功能的用户。</dd></div>
+                  <div><dt>切入</dt><dd>查看 Issues 和最近 Commit 记录以判断项目活跃度与性质。</dd></div>
+                  <div><dt>注意</dt><dd>描述缺失，存在较高不确定性，建议先观望。</dd></div>
+                </dl>
+                <div class="tags"><span>未知</span><span>高风险</span><span>需验证</span></div>
+              </div>
+            </article>
+            
+            <article class="repo">
+              <div class="rank"><span>02</span></div>
+              <div class="repo-body">
+                <div class="repo-head">
+                  <h3><a href="https://github.com/hoainho/img2threejs">hoainho/img2threejs</a></h3>
+                  <div class="meta">
+                  <span>Python</span>
+                  <span>星标 3204</span>
+                  <span>分叉 245</span>
+                  <span>创建 2026-07-15</span>
+                  <span>更新 2026-07-24</span>
+                  </div>
+                </div>
+                <p class="desc">Rebuild the object in a reference image as a code-only, procedural, quality-gated, animation-ready Three.js model. Token-efficient image-to-3D.</p>
+                <p class="reason">将参考图像重建为纯代码、程序化、质量可控且支持动画的 Three.js 模型，实现了 Token 高效的图像到 3D 转换。</p>
+                <div class="quality quality-high">
+                  <div class="quality-item"><span>含金量</span><strong>值得重点看</strong></div>
+                  <div class="quality-item"><span>质量分</span><strong>85</strong></div>
+                  <div class="quality-item"><span>水分风险</span><strong>中</strong></div>
+                  <div class="quality-item"><span>建议</span><strong>优先试跑</strong></div>
+                </div>
+                <p class="quality-reason">Star 数增长迅速，解决了具体的前端 3D 集成痛点，技术路径清晰（Procedural Generation）。</p>
+                <dl class="detail-list">
+                  <div><dt>价值</dt><dd>解决了传统 Image-to-3D 生成模型文件大、难以编辑的问题，直接生成前端代码便于集成与修改。</dd></div>
+                  <div><dt>适合</dt><dd>Web 前端开发者、3D 网页设计师、AI 创意工作者。</dd></div>
+                  <div><dt>切入</dt><dd>查看 examples 目录下的生成效果对比，尝试上传一张简单物体图片测试。</dd></div>
+                  <div><dt>注意</dt><dd>依赖特定的 AI 模型后端，需确认本地部署或 API 调用的成本。</dd></div>
+                </dl>
+                <div class="tags"><span>Three.js</span><span>Image-to-3D</span><span>AI生成</span><span>前端工具</span></div>
+              </div>
+            </article>
+            
+            <article class="repo">
+              <div class="rank"><span>03</span></div>
+              <div class="repo-body">
+                <div class="repo-head">
+                  <h3><a href="https://github.com/MDX-Tom/gpt-5.6-instruct">MDX-Tom/gpt-5.6-instruct</a></h3>
+                  <div class="meta">
+                  <span>Python</span>
+                  <span>星标 2770</span>
+                  <span>分叉 484</span>
+                  <span>创建 2026-07-11</span>
+                  <span>更新 2026-07-24</span>
+                  </div>
+                </div>
+                <p class="desc">A Codex CLI jailbreak prompt and test pack for gpt-5.6-sol. 针对 gpt-5.6 系列的 Codex CLI 破甲提示词与测试包。</p>
+                <p class="reason">针对 gpt-5.6 系列的 Codex CLI 破甲提示词与测试包，属于对抗性测试资源。</p>
+                <div class="quality quality-good">
+                  <div class="quality-item"><span>含金量</span><strong>值得看</strong></div>
+                  <div class="quality-item"><span>质量分</span><strong>70</strong></div>
+                  <div class="quality-item"><span>水分风险</span><strong>中</strong></div>
+                  <div class="quality-item"><span>建议</span><strong>收藏跟踪</strong></div>
+                </div>
+                <p class="quality-reason">特定领域的 niche 工具，Star 数适中，反映了社区对新模型安全性的关注。</p>
+                <dl class="detail-list">
+                  <div><dt>价值</dt><dd>帮助开发者了解模型边界，进行安全测试或研究提示词注入防御。</dd></div>
+                  <div><dt>适合</dt><dd>AI 安全研究员、红队测试人员、Prompt 工程师。</dd></div>
+                  <div><dt>切入</dt><dd>阅读 README 中的免责声明和使用指南，理解其测试原理。</dd></div>
+                  <div><dt>注意</dt><dd>涉及模型越狱，可能在生产环境中违反使用条款，仅限研究用途。</dd></div>
+                </dl>
+                <div class="tags"><span>Prompt工程</span><span>AI安全</span><span>越狱测试</span><span>Codex</span></div>
+              </div>
+            </article>
+            
+            <article class="repo">
+              <div class="rank"><span>04</span></div>
+              <div class="repo-body">
+                <div class="repo-head">
+                  <h3><a href="https://github.com/lopopolo/harness-engineering">lopopolo/harness-engineering</a></h3>
+                  <div class="meta">
+                  <span>Python</span>
+                  <span>星标 2281</span>
+                  <span>分叉 229</span>
+                  <span>创建 2026-07-19</span>
+                  <span>更新 2026-07-19</span>
+                  </div>
+                </div>
+                <p class="desc">🐎 Ryan Lopopolo’s anthology, field guide, and agent context bundle for harness engineering</p>
+                <p class="reason">Ryan Lopopolo 的 Harness Engineering 选集、现场指南和 Agent 上下文捆绑包，系统化总结 Agent 工程实践。</p>
+                <div class="quality quality-high">
+                  <div class="quality-item"><span>含金量</span><strong>值得重点看</strong></div>
+                  <div class="quality-item"><span>质量分</span><strong>90</strong></div>
+                  <div class="quality-item"><span>水分风险</span><strong>低</strong></div>
+                  <div class="quality-item"><span>建议</span><strong>优先阅读</strong></div>
+                </div>
+                <p class="quality-reason">作者在该领域有影响力，内容结构化程度高，Star 数稳定增长，具有长期参考价值。</p>
+                <dl class="detail-list">
+                  <div><dt>价值</dt><dd>提供了构建可靠 Agent 系统的理论框架和实战经验，填补了该领域文档的空白。</dd></div>
+                  <div><dt>适合</dt><dd>AI Agent 架构师、高级后端开发者、技术团队负责人。</dd></div>
+                  <div><dt>切入</dt><dd>浏览目录结构，重点关注“Field Guide”部分的案例研究。</dd></div>
+                  <div><dt>注意</dt><dd>内容偏向方法论和最佳实践，非即插即用的代码库。</dd></div>
+                </dl>
+                <div class="tags"><span>Agent工程</span><span>最佳实践</span><span>架构设计</span><span>知识库</span></div>
+              </div>
+            </article>
+            
+            <article class="repo">
+              <div class="rank"><span>05</span></div>
+              <div class="repo-body">
+                <div class="repo-head">
+                  <h3><a href="https://github.com/HUANGCHIHHUNGLeo/claude-real-video">HUANGCHIHHUNGLeo/claude-real-video</a></h3>
+                  <div class="meta">
+                  <span>Python</span>
+                  <span>星标 1841</span>
+                  <span>分叉 150</span>
+                  <span>创建 2026-06-30</span>
+                  <span>更新 2026-07-21</span>
+                  </div>
+                </div>
+                <p class="desc">Let Claude (or any LLM) actually watch a video — scene-aware, deduplicated frames + transcript, from a URL or local file. Runs locally, MIT.</p>
+                <p class="reason">让 Claude（或任何 LLM）真正“观看”视频，通过场景感知、去重帧和转录，支持 URL 或本地文件，本地运行。</p>
+                <div class="quality quality-good">
+                  <div class="quality-item"><span>含金量</span><strong>值得看</strong></div>
+                  <div class="quality-item"><span>质量分</span><strong>80</strong></div>
+                  <div class="quality-item"><span>水分风险</span><strong>低</strong></div>
+                  <div class="quality-item"><span>建议</span><strong>优先试跑</strong></div>
+                </div>
+                <p class="quality-reason">功能明确，解决了 LLM 视频理解的最后一公里问题，MIT 协议友好。</p>
+                <dl class="detail-list">
+                  <div><dt>价值</dt><dd>降低了视频内容分析的门槛，使 LLM 能处理长视频语境，适用于内容摘要、关键帧提取等场景。</dd></div>
+                  <div><dt>适合</dt><dd>多媒体开发者、内容创作者、AI 应用开发者。</dd></div>
+                  <div><dt>切入</dt><dd>安装依赖后，尝试传入一个短视频 URL 测试其帧提取和转录效果。</dd></div>
+                  <div><dt>注意</dt><dd>依赖 FFmpeg 和 Whisper，本地资源消耗较大，需注意硬件配置。</dd></div>
+                </dl>
+                <div class="tags"><span>视频分析</span><span>多模态</span><span>Claude</span><span>本地运行</span></div>
+              </div>
+            </article>
+            
+            <article class="repo">
+              <div class="rank"><span>06</span></div>
+              <div class="repo-body">
+                <div class="repo-head">
+                  <h3><a href="https://github.com/andrewyng/openworker">andrewyng/openworker</a></h3>
+                  <div class="meta">
+                  <span>Python</span>
+                  <span>星标 1651</span>
+                  <span>分叉 242</span>
+                  <span>创建 2026-07-20</span>
+                  <span>更新 2026-07-24</span>
+                  </div>
+                </div>
+                <p class="desc">暂无项目描述。</p>
+                <p class="reason">吴恩达发起的项目，描述为空，但鉴于发起人背景，可能涉及分布式 AI 工作负载或新型 Agent 框架。</p>
+                <div class="quality quality-watch">
+                  <div class="quality-item"><span>含金量</span><strong>观望</strong></div>
+                  <div class="quality-item"><span>质量分</span><strong>60</strong></div>
+                  <div class="quality-item"><span>水分风险</span><strong>中</strong></div>
+                  <div class="quality-item"><span>建议</span><strong>收藏跟踪</strong></div>
+                </div>
+                <p class="quality-reason">名人效应带来高 Star，但缺乏实质内容描述，需时间验证其实际价值。</p>
+                <dl class="detail-list">
+                  <div><dt>价值</dt><dd>若为吴恩达团队新作，可能定义下一代 AI 工作流标准，值得早期关注。</dd></div>
+                  <div><dt>适合</dt><dd>AI 行业观察者、早期采用者、分布式系统开发者。</dd></div>
+                  <div><dt>切入</dt><dd>关注项目后续更新，查看初始 Commit 的代码结构。</dd></div>
+                  <div><dt>注意</dt><dd>目前信息极少，存在较高不确定性，需等待更多文档披露。</dd></div>
+                </dl>
+                <div class="tags"><span>吴恩达</span><span>AI框架</span><span>早期项目</span><span>待定</span></div>
+              </div>
+            </article>
+            
+            <article class="repo">
+              <div class="rank"><span>07</span></div>
+              <div class="repo-body">
+                <div class="repo-head">
+                  <h3><a href="https://github.com/Jia-Ethan/codex-keysmith">Jia-Ethan/codex-keysmith</a></h3>
+                  <div class="meta">
+                  <span>Python</span>
+                  <span>星标 1596</span>
+                  <span>分叉 276</span>
+                  <span>创建 2026-06-28</span>
+                  <span>更新 2026-07-23</span>
+                  </div>
+                </div>
+                <p class="desc">Version-independent Codex instruction deployment with dry-run, backups, hook isolation, and recovery.</p>
+                <p class="reason">版本独立的 Codex 指令部署工具，支持干跑、备份、钩子隔离和恢复，提升配置管理的安全性。</p>
+                <div class="quality quality-good">
+                  <div class="quality-item"><span>含金量</span><strong>值得看</strong></div>
+                  <div class="quality-item"><span>质量分</span><strong>75</strong></div>
+                  <div class="quality-item"><span>水分风险</span><strong>低</strong></div>
+                  <div class="quality-item"><span>建议</span><strong>优先试跑</strong></div>
+                </div>
+                <p class="quality-reason">工具属性强，解决了具体痛点，代码结构清晰，Issue 较少。</p>
+                <dl class="detail-list">
+                  <div><dt>价值</dt><dd>解决了 AI 编码助手配置混乱、易出错的问题，提供企业级的配置管理能力。</dd></div>
+                  <div><dt>适合</dt><dd>DevOps 工程师、团队 Tech Lead、重度 Codex 用户。</dd></div>
+                  <div><dt>切入</dt><dd>阅读文档了解其如何隔离不同版本的指令集，尝试备份当前配置。</dd></div>
+                  <div><dt>注意</dt><dd>主要针对 Codex CLI 用户，其他 IDE 插件用户可能不适用。</dd></div>
+                </dl>
+                <div class="tags"><span>DevOps</span><span>配置管理</span><span>Codex</span><span>CLI工具</span></div>
+              </div>
+            </article>
+            
+            <article class="repo">
+              <div class="rank"><span>08</span></div>
+              <div class="repo-body">
+                <div class="repo-head">
+                  <h3><a href="https://github.com/anthropics/jacobian-lens">anthropics/jacobian-lens</a></h3>
+                  <div class="meta">
+                  <span>Python</span>
+                  <span>星标 1558</span>
+                  <span>分叉 221</span>
+                  <span>创建 2026-07-03</span>
+                  <span>更新 2026-07-18</span>
+                  </div>
+                </div>
+                <p class="desc"> Companion code for the global workspace interpretability paper</p>
+                <p class="reason">全球工作区可解释性论文的配套代码，由 Anthropic 官方发布，用于研究 LLM 内部机制。</p>
+                <div class="quality quality-high">
+                  <div class="quality-item"><span>含金量</span><strong>值得重点看</strong></div>
+                  <div class="quality-item"><span>质量分</span><strong>88</strong></div>
+                  <div class="quality-item"><span>水分风险</span><strong>低</strong></div>
+                  <div class="quality-item"><span>建议</span><strong>收藏跟踪</strong></div>
+                </div>
+                <p class="quality-reason">官方背书，学术价值高，Star 数反映其在研究社区的影响力。</p>
+                <dl class="detail-list">
+                  <div><dt>价值</dt><dd>提供了顶尖 AI 实验室的研究复现资源，有助于深入理解模型行为。</dd></div>
+                  <div><dt>适合</dt><dd>AI 研究员、机器学习工程师、学术机构。</dd></div>
+                  <div><dt>切入</dt><dd>结合原论文阅读代码，重点关注 Jacobian 矩阵的计算与分析部分。</dd></div>
+                  <div><dt>注意</dt><dd>学术性强，上手门槛高，不适合普通应用开发者。</dd></div>
+                </dl>
+                <div class="tags"><span>AI可解释性</span><span>Anthropic</span><span>学术研究</span><span>LLM内部机制</span></div>
+              </div>
+            </article>
+            
+            <article class="repo">
+              <div class="rank"><span>09</span></div>
+              <div class="repo-body">
+                <div class="repo-head">
+                  <h3><a href="https://github.com/shepherd-agents/shepherd">shepherd-agents/shepherd</a></h3>
+                  <div class="meta">
+                  <span>Python</span>
+                  <span>星标 1534</span>
+                  <span>分叉 122</span>
+                  <span>创建 2026-06-25</span>
+                  <span>更新 2026-07-22</span>
+                  </div>
+                </div>
+                <p class="desc">A runtime substrate that turns an agent&#x27;s execution into a reversible, Git-like trace, so meta-agents can observe, fork, replay, and revert any run. Couples agent and environments in a copy-on-write fork ~5x faster than docker commit, with ~95% KV-cache reuse on replay. Framework built for meta-agents to supervise, optimize, and train other agents</p>
+                <p class="reason">将 Agent 执行转化为可逆、类 Git 的追踪记录，支持元 Agent 观察、分叉、回放和撤销，加速 KV 缓存复用。</p>
+                <div class="quality quality-high">
+                  <div class="quality-item"><span>含金量</span><strong>值得重点看</strong></div>
+                  <div class="quality-item"><span>质量分</span><strong>85</strong></div>
+                  <div class="quality-item"><span>水分风险</span><strong>中</strong></div>
+                  <div class="quality-item"><span>建议</span><strong>优先试跑</strong></div>
+                </div>
+                <p class="quality-reason">技术创新性强，解决了 Agent 工程中的核心痛点（可观测性与可逆性），Star 增长健康。</p>
+                <dl class="detail-list">
+                  <div><dt>价值</dt><dd>解决了 Agent 执行过程黑盒、难以调试和复现的问题，提升了开发迭代效率。</dd></div>
+                  <div><dt>适合</dt><dd>Agent 框架开发者、复杂工作流构建者、AI 调试专家。</dd></div>
+                  <div><dt>切入</dt><dd>查看其如何实现 Copy-on-Write 分叉，尝试回放一个简单的 Agent 任务。</dd></div>
+                  <div><dt>注意</dt><dd>概念较新，可能需要适配现有的 Agent 框架才能发挥最大效用。</dd></div>
+                </dl>
+                <div class="tags"><span>Agent调试</span><span>可逆执行</span><span>Git-like</span><span>元Agent</span></div>
+              </div>
+            </article>
+            
+            <article class="repo">
+              <div class="rank"><span>10</span></div>
+              <div class="repo-body">
+                <div class="repo-head">
+                  <h3><a href="https://github.com/vinhhien112/Three.js-Object-Sculptor-Codex-Plugin">vinhhien112/Three.js-Object-Sculptor-Codex-Plugin</a></h3>
+                  <div class="meta">
+                  <span>Python</span>
+                  <span>星标 1445</span>
+                  <span>分叉 148</span>
+                  <span>创建 2026-07-10</span>
+                  <span>更新 2026-07-18</span>
+                  </div>
+                </div>
+                <p class="desc">Codex plugin that turns attached object images into code-only, animation-ready procedural Three.js models.</p>
+                <p class="reason">Codex 插件，将附加的对象图像转换为纯代码、支持动画的程序化 Three.js 模型。</p>
+                <div class="quality quality-good">
+                  <div class="quality-item"><span>含金量</span><strong>值得看</strong></div>
+                  <div class="quality-item"><span>质量分</span><strong>72</strong></div>
+                  <div class="quality-item"><span>水分风险</span><strong>中</strong></div>
+                  <div class="quality-item"><span>建议</span><strong>收藏跟踪</strong></div>
+                </div>
+                <p class="quality-reason">作为插件形式存在，便利性高，但受众受限于 Codex 用户群体。</p>
+                <dl class="detail-list">
+                  <div><dt>价值</dt><dd>将 img2threejs 的能力集成到 Codex 工作流中，实现设计到代码的无缝衔接。</dd></div>
+                  <div><dt>适合</dt><dd>使用 Codex 的前端开发者、UI/UX 设计师。</dd></div>
+                  <div><dt>切入</dt><dd>在 Codex 中安装插件，上传一张产品图测试生成效果。</dd></div>
+                  <div><dt>注意</dt><dd>依赖 Codex 环境，通用性不如独立脚本。</dd></div>
+                </dl>
+                <div class="tags"><span>Codex插件</span><span>Three.js</span><span>AI生成</span><span>前端工具</span></div>
+              </div>
+            </article>
+            
+        </section>
+        
+        <section id="lang-1" class="lang lang-panel" role="tabpanel" data-lang-panel hidden>
+          <div class="lang-head">
+            <div>
+              <p class="section-kicker">语言简报</p>
+              <h2>Java <span>7</span></h2>
+            </div>
+            <p>Java 板块相对平静，主要围绕 Android 系统定制、远程监控工具及 Spring AI 的学习实践，缺乏大型框架级更新。</p>
+          </div>
+          <ul class="insight-list"><li>Android 系统增强：MIUI 手势恢复与云备份助手等实用工具，满足特定用户群需求。</li><li>远程运维：Haoleme 提供手机端监控服务器命令状态的能力，简化运维流程。</li><li>AI 教育整合：MindTrain 尝试将 AI 驱动的知识训练与 Anki/FSRS 算法结合。</li><li>Spring AI 实践：少量仓库展示 Spring AI Agent 的学习路径，适合 Java 后端开发者入门。</li></ul>
+          
+            <article class="repo">
+              <div class="rank"><span>01</span></div>
+              <div class="repo-body">
+                <div class="repo-head">
+                  <h3><a href="https://github.com/HaolemeApp/Haoleme">HaolemeApp/Haoleme</a></h3>
+                  <div class="meta">
+                  <span>Java</span>
+                  <span>星标 129</span>
+                  <span>分叉 4</span>
+                  <span>创建 2026-07-02</span>
+                  <span>更新 2026-07-22</span>
+                  </div>
+                </div>
+                <p class="desc">在手机上监控电脑和服务器中的命令运行状态、实时输出与完成通知，配合 hao CLI 使用。</p>
+                <p class="reason">在手机上监控电脑和服务器中的命令运行状态、实时输出与完成通知，配合 hao CLI 使用。</p>
+                <div class="quality quality-good">
+                  <div class="quality-item"><span>含金量</span><strong>值得看</strong></div>
+                  <div class="quality-item"><span>质量分</span><strong>65</strong></div>
+                  <div class="quality-item"><span>水分风险</span><strong>低</strong></div>
+                  <div class="quality-item"><span>建议</span><strong>优先试跑</strong></div>
+                </div>
+                <p class="quality-reason">实用工具，Star 数虽不高但需求明确，适合小范围推广。</p>
+                <dl class="detail-list">
+                  <div><dt>价值</dt><dd>提升了运维人员的移动办公体验，无需时刻守在电脑前即可掌握任务进度。</dd></div>
+                  <div><dt>适合</dt><dd>运维工程师、后端开发者、远程工作者。</dd></div>
+                  <div><dt>切入</dt><dd>安装服务端 CLI 和手机 App，配对后尝试运行一个长时间任务。</dd></div>
+                  <div><dt>注意</dt><dd>需要自建服务端或信任其云服务，注意数据安全。</dd></div>
+                </dl>
+                <div class="tags"><span>运维监控</span><span>移动端</span><span>CLI</span><span>远程管理</span></div>
+              </div>
+            </article>
+            
+            <article class="repo">
+              <div class="rank"><span>02</span></div>
+              <div class="repo-body">
+                <div class="repo-head">
+                  <h3><a href="https://github.com/Juncai22/spring-ai-agent-learning">Juncai22/spring-ai-agent-learning</a></h3>
+                  <div class="meta">
+                  <span>Java</span>
+                  <span>星标 123</span>
+                  <span>分叉 18</span>
+                  <span>创建 2026-07-07</span>
+                  <span>更新 2026-07-17</span>
+                  </div>
+                </div>
+                <p class="desc">Spring AI Agent 学习</p>
+                <p class="reason">Spring AI Agent 学习仓库，包含示例和练习。</p>
+                <div class="quality quality-good">
+                  <div class="quality-item"><span>含金量</span><strong>值得看</strong></div>
+                  <div class="quality-item"><span>质量分</span><strong>60</strong></div>
+                  <div class="quality-item"><span>水分风险</span><strong>低</strong></div>
+                  <div class="quality-item"><span>建议</span><strong>收藏跟踪</strong></div>
+                </div>
+                <p class="quality-reason">典型的学习型仓库，Star 数反映其作为教程的价值，代码质量取决于维护者。</p>
+                <dl class="detail-list">
+                  <div><dt>价值</dt><dd>为 Java 开发者提供了进入 AI Agent 领域的入门路径，降低学习曲线。</dd></div>
+                  <div><dt>适合</dt><dd>Java 后端开发者、Spring 生态用户、AI 初学者。</dd></div>
+                  <div><dt>切入</dt><dd>克隆仓库，按照 README 步骤运行第一个 Agent 示例。</dd></div>
+                  <div><dt>注意</dt><dd>内容为教程性质，非生产级框架，适合学习而非直接商用。</dd></div>
+                </dl>
+                <div class="tags"><span>Spring AI</span><span>Java</span><span>教程</span><span>Agent入门</span></div>
+              </div>
+            </article>
+            
+            <article class="repo">
+              <div class="rank"><span>03</span></div>
+              <div class="repo-body">
+                <div class="repo-head">
+                  <h3><a href="https://github.com/shigella520/MindTrain">shigella520/MindTrain</a></h3>
+                  <div class="meta">
+                  <span>Java</span>
+                  <span>星标 85</span>
+                  <span>分叉 6</span>
+                  <span>创建 2026-07-17</span>
+                  <span>更新 2026-07-23</span>
+                  </div>
+                </div>
+                <p class="desc">AI-driven knowledge training platform with pluggable schedulers, Codex Skill integration, and optional Anki/FSRS support.</p>
+                <p class="reason">AI 驱动的知识训练平台，支持可插拔调度器、Codex Skill 集成及可选的 Anki/FSRS 支持。</p>
+                <div class="quality quality-watch">
+                  <div class="quality-item"><span>含金量</span><strong>观望</strong></div>
+                  <div class="quality-item"><span>质量分</span><strong>55</strong></div>
+                  <div class="quality-item"><span>水分风险</span><strong>中</strong></div>
+                  <div class="quality-item"><span>建议</span><strong>先观望</strong></div>
+                </div>
+                <p class="quality-reason">概念有趣，但 Star 数较低，需观察其后续迭代和社区反馈。</p>
+                <dl class="detail-list">
+                  <div><dt>价值</dt><dd>将 AI 生成内容与间隔重复算法结合，提升知识内化效率。</dd></div>
+                  <div><dt>适合</dt><dd>终身学习者、教育工作者、知识管理系统用户。</dd></div>
+                  <div><dt>切入</dt><dd>配置 Codex Skill，导入一些学习资料测试生成卡片的效果。</dd></div>
+                  <div><dt>注意</dt><dd>项目较新，生态插件可能尚不完善。</dd></div>
+                </dl>
+                <div class="tags"><span>AI教育</span><span>Anki</span><span>知识管理</span><span>Codex集成</span></div>
+              </div>
+            </article>
+            
+            <article class="repo">
+              <div class="rank"><span>04</span></div>
+              <div class="repo-body">
+                <div class="repo-head">
+                  <h3><a href="https://github.com/wxxsfxyzm/MiuiBackGestureHook">wxxsfxyzm/MiuiBackGestureHook</a></h3>
+                  <div class="meta">
+                  <span>Java</span>
+                  <span>星标 69</span>
+                  <span>分叉 9</span>
+                  <span>创建 2026-07-09</span>
+                  <span>更新 2026-07-24</span>
+                  </div>
+                </div>
+                <p class="desc">Restore AOSP gesture and predictive back for Xiaomi Android 16 devices.</p>
+                <p class="reason">为小米 Android 16 设备恢复 AOSP 手势和预测性返回功能。</p>
+                <div class="quality quality-good">
+                  <div class="quality-item"><span>含金量</span><strong>值得看</strong></div>
+                  <div class="quality-item"><span>质量分</span><strong>60</strong></div>
+                  <div class="quality-item"><span>水分风险</span><strong>低</strong></div>
+                  <div class="quality-item"><span>建议</span><strong>低优先级</strong></div>
+                </div>
+                <p class="quality-reason">垂直领域的实用工具，目标用户明确，Star 数符合预期。</p>
+                <dl class="detail-list">
+                  <div><dt>价值</dt><dd>改善了特定机型用户的交互体验，解决了系统更新带来的手势兼容性问题。</dd></div>
+                  <div><dt>适合</dt><dd>小米手机用户、Android 定制爱好者。</dd></div>
+                  <div><dt>切入</dt><dd>确认机型兼容性后，通过 Xposed/LSPosed 安装模块。</dd></div>
+                  <div><dt>注意</dt><dd>需要 Root 或 LSPosed 环境，存在一定刷机风险。</dd></div>
+                </dl>
+                <div class="tags"><span>Android</span><span>MIUI</span><span>Xposed</span><span>手势优化</span></div>
+              </div>
+            </article>
+            
+            <article class="repo">
+              <div class="rank"><span>05</span></div>
+              <div class="repo-body">
+                <div class="repo-head">
+                  <h3><a href="https://github.com/zgcwkjOpenProject/XPoser_MiBackup">zgcwkjOpenProject/XPoser_MiBackup</a></h3>
+                  <div class="meta">
+                  <span>Java</span>
+                  <span>星标 66</span>
+                  <span>分叉 14</span>
+                  <span>创建 2026-07-09</span>
+                  <span>更新 2026-07-22</span>
+                  </div>
+                </div>
+                <p class="desc">云备份助手（虚拟一个小米智能存储设备实现云备份功能）</p>
+                <p class="reason">云备份助手，虚拟一个小米智能存储设备实现云备份功能。</p>
+                <div class="quality quality-watch">
+                  <div class="quality-item"><span>含金量</span><strong>观望</strong></div>
+                  <div class="quality-item"><span>质量分</span><strong>50</strong></div>
+                  <div class="quality-item"><span>水分风险</span><strong>中</strong></div>
+                  <div class="quality-item"><span>建议</span><strong>先观望</strong></div>
+                </div>
+                <p class="quality-reason">小众工具，Star 数少，可能存在维护风险。</p>
+                <dl class="detail-list">
+                  <div><dt>价值</dt><dd>为不支持官方云备份的设备或场景提供替代方案，增强数据安全性。</dd></div>
+                  <div><dt>适合</dt><dd>小米生态用户、数据备份需求者。</dd></div>
+                  <div><dt>切入</dt><dd>阅读文档了解其虚拟化原理，配置备份路径。</dd></div>
+                  <div><dt>注意</dt><dd>涉及系统底层 hook，稳定性需自行测试。</dd></div>
+                </dl>
+                <div class="tags"><span>Android</span><span>备份</span><span>MIUI</span><span>虚拟化</span></div>
+              </div>
+            </article>
+            
+            <article class="repo">
+              <div class="rank"><span>06</span></div>
+              <div class="repo-body">
+                <div class="repo-head">
+                  <h3><a href="https://github.com/harimoradiya/androidtvremote">harimoradiya/androidtvremote</a></h3>
+                  <div class="meta">
+                  <span>Java</span>
+                  <span>星标 56</span>
+                  <span>分叉 4</span>
+                  <span>创建 2026-06-25</span>
+                  <span>更新 2026-07-18</span>
+                  </div>
+                </div>
+                <p class="desc">TV Remote for Android TV is a fast, secure, and completely free Android application that turns your smartphone into a reliable remote control for Android TV and compatible Smart TVs.</p>
+                <p class="reason">将智能手机变为 Android TV 和兼容智能电视的可靠遥控器，快速、安全、免费。</p>
+                <div class="quality quality-watch">
+                  <div class="quality-item"><span>含金量</span><strong>观望</strong></div>
+                  <div class="quality-item"><span>质量分</span><strong>45</strong></div>
+                  <div class="quality-item"><span>水分风险</span><strong>低</strong></div>
+                  <div class="quality-item"><span>建议</span><strong>低优先级</strong></div>
+                </div>
+                <p class="quality-reason">通用型工具，竞争激烈，本项目无明显差异化优势。</p>
+                <dl class="detail-list">
+                  <div><dt>价值</dt><dd>提供了原生遥控器的替代方案，尤其在物理遥控器丢失或损坏时非常有用。</dd></div>
+                  <div><dt>适合</dt><dd>Android TV 用户、智能家居爱好者。</dd></div>
+                  <div><dt>切入</dt><dd>在手机和 TV 上分别安装应用，确保在同一局域网下配对。</dd></div>
+                  <div><dt>注意</dt><dd>功能较为基础，市面上已有类似成熟应用。</dd></div>
+                </dl>
+                <div class="tags"><span>Android TV</span><span>遥控器</span><span>智能家居</span><span>工具</span></div>
+              </div>
+            </article>
+            
+            <article class="repo">
+              <div class="rank"><span>07</span></div>
+              <div class="repo-body">
+                <div class="repo-head">
+                  <h3><a href="https://github.com/demavrin/Java-Learning">demavrin/Java-Learning</a></h3>
+                  <div class="meta">
+                  <span>Java</span>
+                  <span>星标 51</span>
+                  <span>分叉 0</span>
+                  <span>创建 2026-07-13</span>
+                  <span>更新 2026-07-23</span>
+                  </div>
+                </div>
+                <p class="desc">My Java learning repository containing examples, exercises, and beginner projects.</p>
+                <p class="reason">个人 Java 学习仓库，包含示例、练习和初学者项目。</p>
+                <div class="quality quality-watch">
+                  <div class="quality-item"><span>含金量</span><strong>观望</strong></div>
+                  <div class="quality-item"><span>质量分</span><strong>40</strong></div>
+                  <div class="quality-item"><span>水分风险</span><strong>低</strong></div>
+                  <div class="quality-item"><span>建议</span><strong>低优先级</strong></div>
+                </div>
+                <p class="quality-reason">典型的学习笔记型仓库，Star 数低，参考价值有限。</p>
+                <dl class="detail-list">
+                  <div><dt>价值</dt><dd>为 Java 初学者提供了结构化的学习资源。</dd></div>
+                  <div><dt>适合</dt><dd>Java 编程新手、学生。</dd></div>
+                  <div><dt>切入</dt><dd>浏览目录，选择感兴趣的主题开始练习。</dd></div>
+                  <div><dt>注意</dt><dd>个人项目，内容质量和更新频率取决于作者。</dd></div>
+                </dl>
+                <div class="tags"><span>Java</span><span>学习</span><span>教程</span><span>初学者</span></div>
+              </div>
+            </article>
+            
+        </section>
+        
+        <section id="lang-2" class="lang lang-panel" role="tabpanel" data-lang-panel hidden>
+          <div class="lang-head">
+            <div>
+              <p class="section-kicker">语言简报</p>
+              <h2>Go <span>10</span></h2>
+            </div>
+            <p>Go 语言成为 Agent 基础设施的首选，涌现出多个高性能、单二进制的工具，专注于记忆管理、网络代理和安全沙箱。</p>
+          </div>
+          <ul class="insight-list"><li>Agent 记忆层：deja-vu 和 paxm 提供跨平台的 Agent 会话记忆存储与检索，支持 MCP 协议。</li><li>安全沙箱：clawk 为 Coding Agents 提供一次性 Linux VM，防止恶意代码污染主机。</li><li>MCP 调试：mcpsnoop 作为 MCP 协议的 Wireshark，实时展示 AI 客户端与服务端的工具调用。</li><li>隐写术与安全：conversation-steganography 利用 LLM 在正常对话中隐藏信息，展示新颖的安全应用场景。</li></ul>
+          
+            <article class="repo">
+              <div class="rank"><span>01</span></div>
+              <div class="repo-body">
+                <div class="repo-head">
+                  <h3><a href="https://github.com/nethical6/conversation-steganography">nethical6/conversation-steganography</a></h3>
+                  <div class="meta">
+                  <span>Go</span>
+                  <span>星标 1072</span>
+                  <span>分叉 77</span>
+                  <span>创建 2026-07-17</span>
+                  <span>更新 2026-07-18</span>
+                  </div>
+                </div>
+                <p class="desc">Use LLMs to hide messages inside normal looking conversations</p>
+                <p class="reason">利用 LLM 在看似正常的对话中隐藏消息，实现隐写术。</p>
+                <div class="quality quality-good">
+                  <div class="quality-item"><span>含金量</span><strong>值得看</strong></div>
+                  <div class="quality-item"><span>质量分</span><strong>75</strong></div>
+                  <div class="quality-item"><span>水分风险</span><strong>中</strong></div>
+                  <div class="quality-item"><span>建议</span><strong>优先试跑</strong></div>
+                </div>
+                <p class="quality-reason">创意独特，Star 数过千，反映了社区对 AI 安全应用的兴趣。</p>
+                <dl class="detail-list">
+                  <div><dt>价值</dt><dd>展示了 LLM 在信息安全领域的 novel 应用，可用于隐蔽通信或水印技术。</dd></div>
+                  <div><dt>适合</dt><dd>安全研究员、密码学爱好者、AI 极客。</dd></div>
+                  <div><dt>切入</dt><dd>运行示例，尝试嵌入和提取隐藏信息，观察对话的自然度。</dd></div>
+                  <div><dt>注意</dt><dd>主要用于研究和演示，实际通信安全性需严格评估。</dd></div>
+                </dl>
+                <div class="tags"><span>隐写术</span><span>LLM</span><span>信息安全</span><span>Go</span></div>
+              </div>
+            </article>
+            
+            <article class="repo">
+              <div class="rank"><span>02</span></div>
+              <div class="repo-body">
+                <div class="repo-head">
+                  <h3><a href="https://github.com/cosmtrek/mindwalk">cosmtrek/mindwalk</a></h3>
+                  <div class="meta">
+                  <span>Go</span>
+                  <span>星标 902</span>
+                  <span>分叉 63</span>
+                  <span>创建 2026-07-09</span>
+                  <span>更新 2026-07-18</span>
+                  </div>
+                </div>
+                <p class="desc">A visualization tool that replays coding-agent sessions on a 3D map of your codebase.</p>
+                <p class="reason">可视化工具，在代码库的 3D 地图上重放 Coding-Agent 会话。</p>
+                <div class="quality quality-good">
+                  <div class="quality-item"><span>含金量</span><strong>值得看</strong></div>
+                  <div class="quality-item"><span>质量分</span><strong>78</strong></div>
+                  <div class="quality-item"><span>水分风险</span><strong>中</strong></div>
+                  <div class="quality-item"><span>建议</span><strong>优先试跑</strong></div>
+                </div>
+                <p class="quality-reason">可视化效果吸引人，解决了 Agent 黑盒问题，Star 数增长良好。</p>
+                <dl class="detail-list">
+                  <div><dt>价值</dt><dd>将抽象的 Agent 思考过程可视化，帮助开发者理解 AI 的代码修改逻辑。</dd></div>
+                  <div><dt>适合</dt><dd>AI 辅助编程用户、代码审查者、技术讲师。</dd></div>
+                  <div><dt>切入</dt><dd>导入一次 Agent 会话日志，查看其在代码结构中的移动轨迹。</dd></div>
+                  <div><dt>注意</dt><dd>依赖特定的 Agent 日志格式，通用性有待验证。</dd></div>
+                </dl>
+                <div class="tags"><span>可视化</span><span>Agent调试</span><span>3D地图</span><span>Go</span></div>
+              </div>
+            </article>
+            
+            <article class="repo">
+              <div class="rank"><span>03</span></div>
+              <div class="repo-body">
+                <div class="repo-head">
+                  <h3><a href="https://github.com/clawkwork/clawk">clawkwork/clawk</a></h3>
+                  <div class="meta">
+                  <span>Go</span>
+                  <span>星标 788</span>
+                  <span>分叉 27</span>
+                  <span>创建 2026-07-07</span>
+                  <span>更新 2026-07-19</span>
+                  </div>
+                </div>
+                <p class="desc">Give coding agents a disposable Linux VM, not your laptop</p>
+                <p class="reason">为 Coding Agents 提供一次性 Linux VM，而非直接使用笔记本，确保主机安全。</p>
+                <div class="quality quality-high">
+                  <div class="quality-item"><span>含金量</span><strong>值得重点看</strong></div>
+                  <div class="quality-item"><span>质量分</span><strong>88</strong></div>
+                  <div class="quality-item"><span>水分风险</span><strong>低</strong></div>
+                  <div class="quality-item"><span>建议</span><strong>优先试跑</strong></div>
+                </div>
+                <p class="quality-reason">切中安全痛点，Go 语言实现高效，Star 数反映其重要性。</p>
+                <dl class="detail-list">
+                  <div><dt>价值</dt><dd>解决了运行不可信 AI 生成代码时的安全风险，是 Agent 工程化的重要基础设施。</dd></div>
+                  <div><dt>适合</dt><dd>安全敏感的开发者、企业级 AI 应用团队。</dd></div>
+                  <div><dt>切入</dt><dd>配置 Clawk，让 Agent 在隔离 VM 中执行危险操作（如 rm -rf）。</dd></div>
+                  <div><dt>注意</dt><dd>需要一定的虚拟化知识，性能开销需权衡。</dd></div>
+                </dl>
+                <div class="tags"><span>安全沙箱</span><span>VM</span><span>Agent安全</span><span>Go</span></div>
+              </div>
+            </article>
+            
+            <article class="repo">
+              <div class="rank"><span>04</span></div>
+              <div class="repo-body">
+                <div class="repo-head">
+                  <h3><a href="https://github.com/HM2899/grokcli-2api">HM2899/grokcli-2api</a></h3>
+                  <div class="meta">
+                  <span>Go</span>
+                  <span>星标 501</span>
+                  <span>分叉 147</span>
+                  <span>创建 2026-07-10</span>
+                  <span>更新 2026-07-24</span>
+                  </div>
+                </div>
+                <p class="desc">暂无项目描述。</p>
+                <p class="reason">描述为空，推测为 Grok CLI 的 API 封装或转换工具。</p>
+                <div class="quality quality-watch">
+                  <div class="quality-item"><span>含金量</span><strong>观望</strong></div>
+                  <div class="quality-item"><span>质量分</span><strong>50</strong></div>
+                  <div class="quality-item"><span>水分风险</span><strong>中</strong></div>
+                  <div class="quality-item"><span>建议</span><strong>先观望</strong></div>
+                </div>
+                <p class="quality-reason">Star 数中等，但缺乏文档，使用成本高。</p>
+                <dl class="detail-list">
+                  <div><dt>价值</dt><dd>若能将 Grok CLI 能力暴露为 API，可方便集成到其他系统中。</dd></div>
+                  <div><dt>适合</dt><dd>Grok 用户、API 集成开发者。</dd></div>
+                  <div><dt>切入</dt><dd>查看源码确认其功能，是否支持标准 HTTP 接口。</dd></div>
+                  <div><dt>注意</dt><dd>描述缺失，需自行验证功能。</dd></div>
+                </dl>
+                <div class="tags"><span>Grok</span><span>CLI</span><span>API</span><span>Go</span></div>
+              </div>
+            </article>
+            
+            <article class="repo">
+              <div class="rank"><span>05</span></div>
+              <div class="repo-body">
+                <div class="repo-head">
+                  <h3><a href="https://github.com/vshulcz/deja-vu">vshulcz/deja-vu</a></h3>
+                  <div class="meta">
+                  <span>Go</span>
+                  <span>星标 465</span>
+                  <span>分叉 24</span>
+                  <span>创建 2026-07-14</span>
+                  <span>更新 2026-07-24</span>
+                  </div>
+                </div>
+                <p class="desc">Your agents already solved this. deja finds it — memory operations for fifteen coding agents: retroactive search and MCP recall (84.9% R@1 on LongMemEval-S, no LLM), trust scopes, curated notes with tags and lifecycle states, measured impact. One zero-dep binary, fully local.</p>
+                <p class="reason">为 15 种 Coding Agents 提供记忆操作，包括回溯搜索和 MCP 召回，零依赖二进制，完全本地运行。</p>
+                <div class="quality quality-high">
+                  <div class="quality-item"><span>含金量</span><strong>值得重点看</strong></div>
+                  <div class="quality-item"><span>质量分</span><strong>90</strong></div>
+                  <div class="quality-item"><span>水分风险</span><strong>低</strong></div>
+                  <div class="quality-item"><span>建议</span><strong>优先试跑</strong></div>
+                </div>
+                <p class="quality-reason">功能强大，零依赖，本地运行，Star 数快速增长，极具实用价值。</p>
+                <dl class="detail-list">
+                  <div><dt>价值</dt><dd>解决了 Agent 缺乏长期记忆的问题，且无需 LLM 即可实现高精度召回，保护隐私。</dd></div>
+                  <div><dt>适合</dt><dd>重度 Agent 用户、隐私倡导者、本地化 AI 开发者。</dd></div>
+                  <div><dt>切入</dt><dd>下载二进制文件，配置 MCP 服务器，测试历史会话搜索。</dd></div>
+                  <div><dt>注意</dt><dd>支持多种 Agent，配置可能稍显复杂。</dd></div>
+                </dl>
+                <div class="tags"><span>Agent记忆</span><span>MCP</span><span>本地运行</span><span>Go</span></div>
+              </div>
+            </article>
+            
+            <article class="repo">
+              <div class="rank"><span>06</span></div>
+              <div class="repo-body">
+                <div class="repo-head">
+                  <h3><a href="https://github.com/YTwsy/OpenSurge-for-Mac">YTwsy/OpenSurge-for-Mac</a></h3>
+                  <div class="meta">
+                  <span>Go</span>
+                  <span>星标 353</span>
+                  <span>分叉 18</span>
+                  <span>创建 2026-06-29</span>
+                  <span>更新 2026-07-24</span>
+                  </div>
+                </div>
+                <p class="desc">Surge-style whole-home gateway and control plane for macOS — mihomo TUN, dnsmasq-powered DHCP/DNS, per-device routing, and an agent-friendly validation workspace.</p>
+                <p class="reason">macOS 上的 Surge 风格全屋网关和控制平面，支持 mihomo TUN、dnsmasq DHCP/DNS 等。</p>
+                <div class="quality quality-good">
+                  <div class="quality-item"><span>含金量</span><strong>值得看</strong></div>
+                  <div class="quality-item"><span>质量分</span><strong>75</strong></div>
+                  <div class="quality-item"><span>水分风险</span><strong>低</strong></div>
+                  <div class="quality-item"><span>建议</span><strong>收藏跟踪</strong></div>
+                </div>
+                <p class="quality-reason">功能全面，针对 macOS 优化，Star 数稳定。</p>
+                <dl class="detail-list">
+                  <div><dt>价值</dt><dd>为 macOS 用户提供了强大的网络管理和代理工具，适合高级网络配置。</dd></div>
+                  <div><dt>适合</dt><dd>macOS 高级用户、网络工程师、代理使用者。</dd></div>
+                  <div><dt>切入</dt><dd>安装后配置 TUN 模式和 DNS 规则，测试网络连通性。</dd></div>
+                  <div><dt>注意</dt><dd>配置复杂，不适合网络小白。</dd></div>
+                </dl>
+                <div class="tags"><span>macOS</span><span>网络代理</span><span>Surge</span><span>Go</span></div>
+              </div>
+            </article>
+            
+            <article class="repo">
+              <div class="rank"><span>07</span></div>
+              <div class="repo-body">
+                <div class="repo-head">
+                  <h3><a href="https://github.com/maaslalani/fast">maaslalani/fast</a></h3>
+                  <div class="meta">
+                  <span>Go</span>
+                  <span>星标 335</span>
+                  <span>分叉 20</span>
+                  <span>创建 2026-06-28</span>
+                  <span>更新 2026-07-20</span>
+                  </div>
+                </div>
+                <p class="desc">Internet speed test in your terminal</p>
+                <p class="reason">终端中的互联网速度测试工具。</p>
+                <div class="quality quality-good">
+                  <div class="quality-item"><span>含金量</span><strong>值得看</strong></div>
+                  <div class="quality-item"><span>质量分</span><strong>65</strong></div>
+                  <div class="quality-item"><span>水分风险</span><strong>低</strong></div>
+                  <div class="quality-item"><span>建议</span><strong>低优先级</strong></div>
+                </div>
+                <p class="quality-reason">小而美工具，Star 数适中，实用性强。</p>
+                <dl class="detail-list">
+                  <div><dt>价值</dt><dd>提供了快速、无 GUI 干扰的网速测试方式，适合脚本集成。</dd></div>
+                  <div><dt>适合</dt><dd>CLI 爱好者、运维人员、开发者。</dd></div>
+                  <div><dt>切入</dt><dd>在终端运行 fast，查看上传下载速度。</dd></div>
+                  <div><dt>注意</dt><dd>功能单一，市面上已有类似工具。</dd></div>
+                </dl>
+                <div class="tags"><span>网速测试</span><span>CLI</span><span>Go</span><span>工具</span></div>
+              </div>
+            </article>
+            
+            <article class="repo">
+              <div class="rank"><span>08</span></div>
+              <div class="repo-body">
+                <div class="repo-head">
+                  <h3><a href="https://github.com/pax-beehive/paxm">pax-beehive/paxm</a></h3>
+                  <div class="meta">
+                  <span>Go</span>
+                  <span>星标 324</span>
+                  <span>分叉 18</span>
+                  <span>创建 2026-07-09</span>
+                  <span>更新 2026-07-21</span>
+                  </div>
+                </div>
+                <p class="desc">Persistent, provider-neutral memory for Codex, Claude Code, OpenCode, Pi, and MCP coding agents.</p>
+                <p class="reason">为 Codex、Claude Code 等 Coding Agents 提供持久、提供商中立的记忆存储。</p>
+                <div class="quality quality-good">
+                  <div class="quality-item"><span>含金量</span><strong>值得看</strong></div>
+                  <div class="quality-item"><span>质量分</span><strong>80</strong></div>
+                  <div class="quality-item"><span>水分风险</span><strong>低</strong></div>
+                  <div class="quality-item"><span>建议</span><strong>优先试跑</strong></div>
+                </div>
+                <p class="quality-reason">解决了跨 Agent 记忆互通的痛点，Go 实现高效，Star 数增长健康。</p>
+                <dl class="detail-list">
+                  <div><dt>价值</dt><dd>统一了不同 Agent 的记忆后端，避免数据孤岛，支持 SQLite 本地存储。</dd></div>
+                  <div><dt>适合</dt><dd>多 Agent 用户、数据隐私关注者。</dd></div>
+                  <div><dt>切入</dt><dd>配置 Paxm 作为 MCP 服务器，连接不同 Agent 测试记忆共享。</dd></div>
+                  <div><dt>注意</dt><dd>需确保各 Agent 支持 MCP 协议。</dd></div>
+                </dl>
+                <div class="tags"><span>Agent记忆</span><span>MCP</span><span>SQLite</span><span>Go</span></div>
+              </div>
+            </article>
+            
+            <article class="repo">
+              <div class="rank"><span>09</span></div>
+              <div class="repo-body">
+                <div class="repo-head">
+                  <h3><a href="https://github.com/Charles-0509/Grok-Register">Charles-0509/Grok-Register</a></h3>
+                  <div class="meta">
+                  <span>Go</span>
+                  <span>星标 315</span>
+                  <span>分叉 115</span>
+                  <span>创建 2026-07-21</span>
+                  <span>更新 2026-07-24</span>
+                  </div>
+                </div>
+                <p class="desc">Grok free-register CLI: register → OAuth → CPA JSON (Go)</p>
+                <p class="reason">Grok 免费注册 CLI，通过 OAuth 获取 CPA JSON。</p>
+                <div class="quality quality-watch">
+                  <div class="quality-item"><span>含金量</span><strong>观望</strong></div>
+                  <div class="quality-item"><span>质量分</span><strong>55</strong></div>
+                  <div class="quality-item"><span>水分风险</span><strong>中</strong></div>
+                  <div class="quality-item"><span>建议</span><strong>先观望</strong></div>
+                </div>
+                <p class="quality-reason">工具属性强，但生命周期受限于第三方服务政策。</p>
+                <dl class="detail-list">
+                  <div><dt>价值</dt><dd>简化了 Grok 服务的注册和认证流程，方便开发者集成。</dd></div>
+                  <div><dt>适合</dt><dd>Grok 开发者、API 集成者。</dd></div>
+                  <div><dt>切入</dt><dd>运行 CLI 完成注册流程，获取认证凭证。</dd></div>
+                  <div><dt>注意</dt><dd>依赖 Grok 官方政策，可能存在变动风险。</dd></div>
+                </dl>
+                <div class="tags"><span>Grok</span><span>OAuth</span><span>CLI</span><span>Go</span></div>
+              </div>
+            </article>
+            
+            <article class="repo">
+              <div class="rank"><span>10</span></div>
+              <div class="repo-body">
+                <div class="repo-head">
+                  <h3><a href="https://github.com/kerlenton/mcpsnoop">kerlenton/mcpsnoop</a></h3>
+                  <div class="meta">
+                  <span>Go</span>
+                  <span>星标 281</span>
+                  <span>分叉 24</span>
+                  <span>创建 2026-06-27</span>
+                  <span>更新 2026-07-22</span>
+                  </div>
+                </div>
+                <p class="desc">Wireshark for MCP. A transparent proxy that shows every real tool call between your AI client and your MCP servers, live in your terminal.</p>
+                <p class="reason">MCP 的 Wireshark，透明代理，实时在终端显示 AI 客户端与 MCP 服务器间的工具调用。</p>
+                <div class="quality quality-high">
+                  <div class="quality-item"><span>含金量</span><strong>值得重点看</strong></div>
+                  <div class="quality-item"><span>质量分</span><strong>85</strong></div>
+                  <div class="quality-item"><span>水分风险</span><strong>低</strong></div>
+                  <div class="quality-item"><span>建议</span><strong>优先试跑</strong></div>
+                </div>
+                <p class="quality-reason">填补了 MCP 生态调试工具的空白，Star 数反映其刚需属性。</p>
+                <dl class="detail-list">
+                  <div><dt>价值</dt><dd>极大地方便了 MCP 协议的调试和问题排查，是开发 MCP 服务器的必备工具。</dd></div>
+                  <div><dt>适合</dt><dd>MCP 服务器开发者、AI 应用调试者。</dd></div>
+                  <div><dt>切入</dt><dd>启动 mcpsnoop 作为代理，观察 AI 请求的详细参数。</dd></div>
+                  <div><dt>注意</dt><dd>仅用于调试，生产环境需移除。</dd></div>
+                </dl>
+                <div class="tags"><span>MCP</span><span>调试</span><span>Wireshark</span><span>Go</span></div>
+              </div>
+            </article>
+            
+        </section>
+        
+        <section id="lang-3" class="lang lang-panel" role="tabpanel" data-lang-panel hidden>
+          <div class="lang-head">
+            <div>
+              <p class="section-kicker">语言简报</p>
+              <h2>JavaScript / TypeScript <span>10</span></h2>
+            </div>
+            <p>TS/JS 生态侧重于 AI 应用的连接层、前端交互创新及安全测试，强调与现有 SaaS 生态的无缝集成。</p>
+          </div>
+          <ul class="insight-list"><li>SaaS 连接器：open-connector 提供统一的认证网关，连接千余家 SaaS 服务至 AI Agent。</li><li>安全红队：T3MP3ST 是一个多代理进攻性安全元框架，用于自动化红队测试。</li><li>空间思维界面：penecho 提供共享画布，支持手写、公式与 AI 协同推理，突破聊天框限制。</li><li>浏览器扩展：knockoff 过滤亚马逊伪品牌商品，体现 AI 在消费决策辅助中的落地。</li></ul>
+          
+            <article class="repo">
+              <div class="rank"><span>01</span></div>
+              <div class="repo-body">
+                <div class="repo-head">
+                  <h3><a href="https://github.com/Fei-Away/Codex-Dream-Skin">Fei-Away/Codex-Dream-Skin</a></h3>
+                  <div class="meta">
+                  <span>JavaScript</span>
+                  <span>星标 12102</span>
+                  <span>分叉 1214</span>
+                  <span>创建 2026-07-15</span>
+                  <span>更新 2026-07-24</span>
+                  </div>
+                </div>
+                <p class="desc">Codex Dream Skin</p>
+                <p class="reason">Codex Dream Skin，推测为 Codex 界面的美化主题或皮肤。</p>
+                <div class="quality quality-good">
+                  <div class="quality-item"><span>含金量</span><strong>值得看</strong></div>
+                  <div class="quality-item"><span>质量分</span><strong>60</strong></div>
+                  <div class="quality-item"><span>水分风险</span><strong>低</strong></div>
+                  <div class="quality-item"><span>建议</span><strong>低优先级</strong></div>
+                </div>
+                <p class="quality-reason">Star 数极高，说明社区对美观度的需求旺盛，但技术含量相对较低。</p>
+                <dl class="detail-list">
+                  <div><dt>价值</dt><dd>提升开发者的视觉体验，个性化工作环境。</dd></div>
+                  <div><dt>适合</dt><dd>Codex 用户、UI 爱好者。</dd></div>
+                  <div><dt>切入</dt><dd>安装主题，预览效果。</dd></div>
+                  <div><dt>注意</dt><dd>纯外观改进，不影响功能。</dd></div>
+                </dl>
+                <div class="tags"><span>Codex</span><span>主题</span><span>UI</span><span>JavaScript</span></div>
+              </div>
+            </article>
+            
+            <article class="repo">
+              <div class="rank"><span>02</span></div>
+              <div class="repo-body">
+                <div class="repo-head">
+                  <h3><a href="https://github.com/elder-plinius/T3MP3ST">elder-plinius/T3MP3ST</a></h3>
+                  <div class="meta">
+                  <span>TypeScript</span>
+                  <span>星标 5132</span>
+                  <span>分叉 1061</span>
+                  <span>创建 2026-07-03</span>
+                  <span>更新 2026-07-21</span>
+                  </div>
+                </div>
+                <p class="desc">autonomous red teaming platform; multi-agent offensive-security meta-harness</p>
+                <p class="reason">自主红队测试平台，多代理进攻性安全元框架。</p>
+                <div class="quality quality-high">
+                  <div class="quality-item"><span>含金量</span><strong>值得重点看</strong></div>
+                  <div class="quality-item"><span>质量分</span><strong>85</strong></div>
+                  <div class="quality-item"><span>水分风险</span><strong>中</strong></div>
+                  <div class="quality-item"><span>建议</span><strong>优先试跑</strong></div>
+                </div>
+                <p class="quality-reason">安全领域的重要工具，Star 数高，反映市场对 AI 安全的重视。</p>
+                <dl class="detail-list">
+                  <div><dt>价值</dt><dd>自动化模拟攻击，帮助发现 AI 应用的安全漏洞，提升系统鲁棒性。</dd></div>
+                  <div><dt>适合</dt><dd>安全工程师、AI 应用开发者、红队成员。</dd></div>
+                  <div><dt>切入</dt><dd>配置目标系统，运行预设的攻击剧本。</dd></div>
+                  <div><dt>注意</dt><dd>需在隔离环境中运行，避免误伤生产系统。</dd></div>
+                </dl>
+                <div class="tags"><span>红队测试</span><span>AI安全</span><span>多Agent</span><span>TypeScript</span></div>
+              </div>
+            </article>
+            
+            <article class="repo">
+              <div class="rank"><span>03</span></div>
+              <div class="repo-body">
+                <div class="repo-head">
+                  <h3><a href="https://github.com/baairon/torlink">baairon/torlink</a></h3>
+                  <div class="meta">
+                  <span>TypeScript</span>
+                  <span>星标 3800</span>
+                  <span>分叉 251</span>
+                  <span>创建 2026-06-25</span>
+                  <span>更新 2026-07-22</span>
+                  </div>
+                </div>
+                <p class="desc">👾 A sleek, zero-setup torrent finder and downloader that lives right in your terminal.</p>
+                <p class="reason">零设置的 Torrent 查找器和下载器，直接在终端中运行。</p>
+                <div class="quality quality-good">
+                  <div class="quality-item"><span>含金量</span><strong>值得看</strong></div>
+                  <div class="quality-item"><span>质量分</span><strong>70</strong></div>
+                  <div class="quality-item"><span>水分风险</span><strong>低</strong></div>
+                  <div class="quality-item"><span>建议</span><strong>优先试跑</strong></div>
+                </div>
+                <p class="quality-reason">实用工具，Star 数高，用户体验良好。</p>
+                <dl class="detail-list">
+                  <div><dt>价值</dt><dd>简化了 P2P 下载流程，无需图形界面，适合服务器或极简主义者。</dd></div>
+                  <div><dt>适合</dt><dd>CLI 爱好者、Linux 用户、P2P 用户。</dd></div>
+                  <div><dt>切入</dt><dd>搜索关键词，选择磁力链接直接下载。</dd></div>
+                  <div><dt>注意</dt><dd>涉及版权风险，请合法使用。</dd></div>
+                </dl>
+                <div class="tags"><span>Torrent</span><span>CLI</span><span>P2P</span><span>TypeScript</span></div>
+              </div>
+            </article>
+            
+            <article class="repo">
+              <div class="rank"><span>04</span></div>
+              <div class="repo-body">
+                <div class="repo-head">
+                  <h3><a href="https://github.com/oomol-lab/open-connector">oomol-lab/open-connector</a></h3>
+                  <div class="meta">
+                  <span>TypeScript</span>
+                  <span>星标 3142</span>
+                  <span>分叉 245</span>
+                  <span>创建 2026-06-29</span>
+                  <span>更新 2026-07-23</span>
+                  </div>
+                </div>
+                <p class="desc">Open-source auth gateway connecting 1000+ SaaS providers to AI agents through SDK, CLI, MCP, HTTP, and OpenAPI.</p>
+                <p class="reason">开源认证网关，通过 SDK、CLI、MCP 等连接 1000+ SaaS 提供商至 AI Agents。</p>
+                <div class="quality quality-high">
+                  <div class="quality-item"><span>含金量</span><strong>值得重点看</strong></div>
+                  <div class="quality-item"><span>质量分</span><strong>90</strong></div>
+                  <div class="quality-item"><span>水分风险</span><strong>低</strong></div>
+                  <div class="quality-item"><span>建议</span><strong>优先试跑</strong></div>
+                </div>
+                <p class="quality-reason">基础设施级项目，解决了大规模集成的痛点，Star 数高，潜力巨大。</p>
+                <dl class="detail-list">
+                  <div><dt>价值</dt><dd>解决了 AI Agent 接入外部服务的认证难题，统一了 OAuth 流程。</dd></div>
+                  <div><dt>适合</dt><dd>AI 应用开发者、集成工程师、SaaS 平台。</dd></div>
+                  <div><dt>切入</dt><dd>使用 SDK 连接一个 SaaS 服务，测试 API 调用。</dd></div>
+                  <div><dt>注意</dt><dd>支持的 SaaS 数量虽多，但需逐个配置。</dd></div>
+                </dl>
+                <div class="tags"><span>SaaS集成</span><span>OAuth</span><span>MCP</span><span>TypeScript</span></div>
+              </div>
+            </article>
+            
+            <article class="repo">
+              <div class="rank"><span>05</span></div>
+              <div class="repo-body">
+                <div class="repo-head">
+                  <h3><a href="https://github.com/synthetic-sciences/openscience">synthetic-sciences/openscience</a></h3>
+                  <div class="meta">
+                  <span>TypeScript</span>
+                  <span>星标 2710</span>
+                  <span>分叉 374</span>
+                  <span>创建 2026-07-03</span>
+                  <span>更新 2026-07-22</span>
+                  </div>
+                </div>
+                <p class="desc">The open-source AI workbench for scientific research</p>
+                <p class="reason">面向科学研究的开源 AI 工作台，支持 Co-scientist 模式。</p>
+                <div class="quality quality-good">
+                  <div class="quality-item"><span>含金量</span><strong>值得看</strong></div>
+                  <div class="quality-item"><span>质量分</span><strong>75</strong></div>
+                  <div class="quality-item"><span>水分风险</span><strong>中</strong></div>
+                  <div class="quality-item"><span>建议</span><strong>收藏跟踪</strong></div>
+                </div>
+                <p class="quality-reason">定位独特，Star 数适中，具有长期社会价值。</p>
+                <dl class="detail-list">
+                  <div><dt>价值</dt><dd>将 AI 引入科研流程，辅助假设生成、实验设计和数据分析。</dd></div>
+                  <div><dt>适合</dt><dd>科研人员、数据科学家、学术界。</dd></div>
+                  <div><dt>切入</dt><dd>导入科研数据集，尝试使用 AI 助手进行分析。</dd></div>
+                  <div><dt>注意</dt><dd>领域垂直，通用性较弱。</dd></div>
+                </dl>
+                <div class="tags"><span>AI科研</span><span>科学计算</span><span>工作台</span><span>TypeScript</span></div>
+              </div>
+            </article>
+            
+            <article class="repo">
+              <div class="rank"><span>06</span></div>
+              <div class="repo-body">
+                <div class="repo-head">
+                  <h3><a href="https://github.com/mekos2772/ios-location-spoofer">mekos2772/ios-location-spoofer</a></h3>
+                  <div class="meta">
+                  <span>JavaScript</span>
+                  <span>星标 2593</span>
+                  <span>分叉 434</span>
+                  <span>创建 2026-06-30</span>
+                  <span>更新 2026-07-20</span>
+                  </div>
+                </div>
+                <p class="desc">Standalone iOS app to spoof GPS location without jailbreak. Includes Shadowrocket/Surge/Loon/QX/Stash module.</p>
+                <p class="reason">无需越狱的 iOS GPS 位置欺骗应用，包含多种代理模块。</p>
+                <div class="quality quality-good">
+                  <div class="quality-item"><span>含金量</span><strong>值得看</strong></div>
+                  <div class="quality-item"><span>质量分</span><strong>65</strong></div>
+                  <div class="quality-item"><span>水分风险</span><strong>中</strong></div>
+                  <div class="quality-item"><span>建议</span><strong>低优先级</strong></div>
+                </div>
+                <p class="quality-reason">实用工具，Star 数高，但存在合规风险。</p>
+                <dl class="detail-list">
+                  <div><dt>价值</dt><dd>满足了测试、隐私保护或游戏作弊等场景的位置模拟需求。</dd></div>
+                  <div><dt>适合</dt><dd>iOS 开发者、测试人员、特定应用用户。</dd></div>
+                  <div><dt>切入</dt><dd>安装应用，设置虚拟位置，验证效果。</dd></div>
+                  <div><dt>注意</dt><dd>可能违反某些应用的服务条款，需谨慎使用。</dd></div>
+                </dl>
+                <div class="tags"><span>iOS</span><span>位置欺骗</span><span>GPS</span><span>JavaScript</span></div>
+              </div>
+            </article>
+            
+            <article class="repo">
+              <div class="rank"><span>07</span></div>
+              <div class="repo-body">
+                <div class="repo-head">
+                  <h3><a href="https://github.com/Younesfdj/gitfut">Younesfdj/gitfut</a></h3>
+                  <div class="meta">
+                  <span>TypeScript</span>
+                  <span>星标 2301</span>
+                  <span>分叉 118</span>
+                  <span>创建 2026-06-24</span>
+                  <span>更新 2026-07-22</span>
+                  </div>
+                </div>
+                <p class="desc">Your GitHub stats, turned into a World-Cup-style player card </p>
+                <p class="reason">将 GitHub 统计数据转化为世界杯风格的球员卡片。</p>
+                <div class="quality quality-good">
+                  <div class="quality-item"><span>含金量</span><strong>值得看</strong></div>
+                  <div class="quality-item"><span>质量分</span><strong>60</strong></div>
+                  <div class="quality-item"><span>水分风险</span><strong>低</strong></div>
+                  <div class="quality-item"><span>建议</span><strong>低优先级</strong></div>
+                </div>
+                <p class="quality-reason">创意有趣，Star 数高，传播性强。</p>
+                <dl class="detail-list">
+                  <div><dt>价值</dt><dd>趣味化展示开发者贡献，适合社交媒体分享和个人品牌建设。</dd></div>
+                  <div><dt>适合</dt><dd>GitHub 用户、前端开发者、社交达人。</dd></div>
+                  <div><dt>切入</dt><dd>输入 GitHub 用户名，生成并下载卡片图片。</dd></div>
+                  <div><dt>注意</dt><dd>娱乐性质为主，无实际工程价值。</dd></div>
+                </dl>
+                <div class="tags"><span>GitHub</span><span>数据可视化</span><span>趣味</span><span>TypeScript</span></div>
+              </div>
+            </article>
+            
+            <article class="repo">
+              <div class="rank"><span>08</span></div>
+              <div class="repo-body">
+                <div class="repo-head">
+                  <h3><a href="https://github.com/Shpigford/knockoff">Shpigford/knockoff</a></h3>
+                  <div class="meta">
+                  <span>JavaScript</span>
+                  <span>星标 1958</span>
+                  <span>分叉 71</span>
+                  <span>创建 2026-07-06</span>
+                  <span>更新 2026-07-18</span>
+                  </div>
+                </div>
+                <p class="desc">Chrome extension that filters pseudo-brand junk out of Amazon. Buy from real, established brands.</p>
+                <p class="reason">Chrome 扩展，过滤亚马逊上的伪品牌垃圾商品，只展示真实 established 品牌。</p>
+                <div class="quality quality-good">
+                  <div class="quality-item"><span>含金量</span><strong>值得看</strong></div>
+                  <div class="quality-item"><span>质量分</span><strong>70</strong></div>
+                  <div class="quality-item"><span>水分风险</span><strong>低</strong></div>
+                  <div class="quality-item"><span>建议</span><strong>优先试跑</strong></div>
+                </div>
+                <p class="quality-reason">解决实际生活痛点，Star 数高，用户反馈积极。</p>
+                <dl class="detail-list">
+                  <div><dt>价值</dt><dd>提升购物体验，节省筛选时间，避免购买劣质产品。</dd></div>
+                  <div><dt>适合</dt><dd>亚马逊购物者、消费者。</dd></div>
+                  <div><dt>切入</dt><dd>安装扩展，浏览亚马逊页面观察过滤效果。</dd></div>
+                  <div><dt>注意</dt><dd>依赖品牌数据库，可能误杀或漏网。</dd></div>
+                </dl>
+                <div class="tags"><span>浏览器扩展</span><span>亚马逊</span><span>购物辅助</span><span>JavaScript</span></div>
+              </div>
+            </article>
+            
+            <article class="repo">
+              <div class="rank"><span>09</span></div>
+              <div class="repo-body">
+                <div class="repo-head">
+                  <h3><a href="https://github.com/amplifthq/opentag">amplifthq/opentag</a></h3>
+                  <div class="meta">
+                  <span>TypeScript</span>
+                  <span>星标 1370</span>
+                  <span>分叉 76</span>
+                  <span>创建 2026-06-24</span>
+                  <span>更新 2026-07-22</span>
+                  </div>
+                </div>
+                <p class="desc">Open-source @agent mentions for Slack and GitHub. OpenTag routes tagged requests to Codex, Claude Code, then returns results in thread.</p>
+                <p class="reason">Slack 和 GitHub 的开源 @agent 提及功能，将标记请求路由至 Codex/Claude Code 并返回结果。</p>
+                <div class="quality quality-good">
+                  <div class="quality-item"><span>含金量</span><strong>值得看</strong></div>
+                  <div class="quality-item"><span>质量分</span><strong>75</strong></div>
+                  <div class="quality-item"><span>水分风险</span><strong>中</strong></div>
+                  <div class="quality-item"><span>建议</span><strong>收藏跟踪</strong></div>
+                </div>
+                <p class="quality-reason">提升了团队协作中的 AI 可用性，Star 数适中，具有实用价值。</p>
+                <dl class="detail-list">
+                  <div><dt>价值</dt><dd>将 AI 能力无缝融入团队协作流程，提升沟通效率。</dd></div>
+                  <div><dt>适合</dt><dd>使用 Slack/GitHub 的团队、AI 协作者。</dd></div>
+                  <div><dt>切入</dt><dd>在 Slack 中 @agent 提问，观察回复速度和准确性。</dd></div>
+                  <div><dt>注意</dt><dd>需配置后端服务，部署有一定门槛。</dd></div>
+                </dl>
+                <div class="tags"><span>Slack</span><span>GitHub</span><span>AI协作</span><span>TypeScript</span></div>
+              </div>
+            </article>
+            
+            <article class="repo">
+              <div class="rank"><span>10</span></div>
+              <div class="repo-body">
+                <div class="repo-head">
+                  <h3><a href="https://github.com/penecho/penecho">penecho/penecho</a></h3>
+                  <div class="meta">
+                  <span>JavaScript</span>
+                  <span>星标 1332</span>
+                  <span>分叉 129</span>
+                  <span>创建 2026-07-14</span>
+                  <span>更新 2026-07-23</span>
+                  </div>
+                </div>
+                <p class="desc">Think with AI beyond the chat box. A shared canvas for handwriting, equations, diagrams, and spatial reasoning.</p>
+                <p class="reason">超越聊天框的 AI 思考工具，提供共享画布，支持手写、公式、图表和空间推理。</p>
+                <div class="quality quality-high">
+                  <div class="quality-item"><span>含金量</span><strong>值得重点看</strong></div>
+                  <div class="quality-item"><span>质量分</span><strong>85</strong></div>
+                  <div class="quality-item"><span>水分风险</span><strong>中</strong></div>
+                  <div class="quality-item"><span>建议</span><strong>优先试跑</strong></div>
+                </div>
+                <p class="quality-reason">创新交互范式，Star 数增长快，代表了 AI UI 的新方向。</p>
+                <dl class="detail-list">
+                  <div><dt>价值</dt><dd>突破了线性聊天的限制，更适合复杂问题的拆解和可视化思考。</dd></div>
+                  <div><dt>适合</dt><dd>教育工作者、研究人员、创意工作者。</dd></div>
+                  <div><dt>切入</dt><dd>打开画布，尝试用手写或绘图与 AI 互动。</dd></div>
+                  <div><dt>注意</dt><dd>交互模式新颖，用户需适应。</dd></div>
+                </dl>
+                <div class="tags"><span>AI画布</span><span>空间推理</span><span>教育</span><span>JavaScript</span></div>
+              </div>
+            </article>
+            
+        </section>
+        
+        <section id="lang-4" class="lang lang-panel" role="tabpanel" data-lang-panel hidden>
+          <div class="lang-head">
+            <div>
+              <p class="section-kicker">语言简报</p>
+              <h2>Rust <span>10</span></h2>
+            </div>
+            <p>Rust 凭借性能优势，在 Agent 终端界面（TUI）、底层解释器及高效下载工具方面表现突出，注重极致体验与资源控制。</p>
+          </div>
+          <ul class="insight-list"><li>官方 Agent 工具：xai-org/grok-build 发布全屏交互式 TUI，标志着头部厂商对 CLI 体验的重视。</li><li>Agent 操作系统：aos-ce 提出开源 Agent 操作系统概念，试图标准化 Agent 的运行环境。</li><li>高性能下载：FluxDown 支持多协议及流媒体下载，展现 Rust 在网络 IO 密集型任务中的优势。</li><li>引用层优化：waggle 通过短令牌替代长上下文粘贴，优化 Agent 间的手递手协作效率。</li></ul>
+          
+            <article class="repo">
+              <div class="rank"><span>01</span></div>
+              <div class="repo-body">
+                <div class="repo-head">
+                  <h3><a href="https://github.com/xai-org/grok-build">xai-org/grok-build</a></h3>
+                  <div class="meta">
+                  <span>Rust</span>
+                  <span>星标 22142</span>
+                  <span>分叉 4177</span>
+                  <span>创建 2026-07-15</span>
+                  <span>更新 2026-07-24</span>
+                  </div>
+                </div>
+                <p class="desc">SpaceXAI&#x27;s coding agent harness and TUI. Fullscreen, mouse interactive, extensible.</p>
+                <p class="reason">SpaceXAI 的 Coding Agent Harness 和 TUI，全屏、鼠标交互、可扩展。</p>
+                <div class="quality quality-high">
+                  <div class="quality-item"><span>含金量</span><strong>值得重点看</strong></div>
+                  <div class="quality-item"><span>质量分</span><strong>95</strong></div>
+                  <div class="quality-item"><span>水分风险</span><strong>低</strong></div>
+                  <div class="quality-item"><span>建议</span><strong>优先试跑</strong></div>
+                </div>
+                <p class="quality-reason">官方背书，Star 数极高，代码质量高，代表了行业前沿。</p>
+                <dl class="detail-list">
+                  <div><dt>价值</dt><dd>官方出品的 Agent 开发环境，定义了新的 CLI/TUI 交互标准，性能强劲。</dd></div>
+                  <div><dt>适合</dt><dd>Grok 用户、Rust 开发者、CLI 工具爱好者。</dd></div>
+                  <div><dt>切入</dt><dd>安装 grok-build，体验其全屏交互和鼠标支持。</dd></div>
+                  <div><dt>注意</dt><dd>绑定 Grok 生态，通用性受限。</dd></div>
+                </dl>
+                <div class="tags"><span>Grok</span><span>TUI</span><span>Rust</span><span>官方工具</span></div>
+              </div>
+            </article>
+            
+            <article class="repo">
+              <div class="rank"><span>02</span></div>
+              <div class="repo-body">
+                <div class="repo-head">
+                  <h3><a href="https://github.com/unicity-aos/aos-ce">unicity-aos/aos-ce</a></h3>
+                  <div class="meta">
+                  <span>Rust</span>
+                  <span>星标 6924</span>
+                  <span>分叉 9</span>
+                  <span>创建 2026-07-13</span>
+                  <span>更新 2026-07-24</span>
+                  </div>
+                </div>
+                <p class="desc">AOS Community Edition: the open agent operating system.</p>
+                <p class="reason">AOS 社区版：开源 Agent 操作系统。</p>
+                <div class="quality quality-good">
+                  <div class="quality-item"><span>含金量</span><strong>值得看</strong></div>
+                  <div class="quality-item"><span>质量分</span><strong>80</strong></div>
+                  <div class="quality-item"><span>水分风险</span><strong>中</strong></div>
+                  <div class="quality-item"><span>建议</span><strong>收藏跟踪</strong></div>
+                </div>
+                <p class="quality-reason">愿景宏大，Star 数高，但实际成熟度需验证。</p>
+                <dl class="detail-list">
+                  <div><dt>价值</dt><dd>试图标准化 Agent 的运行环境，提供统一的资源管理和调度。</dd></div>
+                  <div><dt>适合</dt><dd>Agent 框架开发者、系统架构师。</dd></div>
+                  <div><dt>切入</dt><dd>阅读文档了解其架构设计，尝试部署一个简单 Agent。</dd></div>
+                  <div><dt>注意</dt><dd>概念宏大，落地难度高，需长期观察。</dd></div>
+                </dl>
+                <div class="tags"><span>Agent OS</span><span>Rust</span><span>开源</span><span>基础设施</span></div>
+              </div>
+            </article>
+            
+            <article class="repo">
+              <div class="rank"><span>03</span></div>
+              <div class="repo-body">
+                <div class="repo-head">
+                  <h3><a href="https://github.com/CluvexStudio/Aether">CluvexStudio/Aether</a></h3>
+                  <div class="meta">
+                  <span>Rust</span>
+                  <span>星标 1486</span>
+                  <span>分叉 94</span>
+                  <span>创建 2026-07-14</span>
+                  <span>更新 2026-07-24</span>
+                  </div>
+                </div>
+                <p class="desc">暂无项目描述。</p>
+                <p class="reason">描述为空，Star 数较高，推测为某种 AI 或系统工具。</p>
+                <div class="quality quality-watch">
+                  <div class="quality-item"><span>含金量</span><strong>观望</strong></div>
+                  <div class="quality-item"><span>质量分</span><strong>50</strong></div>
+                  <div class="quality-item"><span>水分风险</span><strong>高</strong></div>
+                  <div class="quality-item"><span>建议</span><strong>先观望</strong></div>
+                </div>
+                <p class="quality-reason">Star 数与描述不匹配，存在炒作嫌疑。</p>
+                <dl class="detail-list">
+                  <div><dt>价值</dt><dd>高关注度暗示其潜在价值，需进一步挖掘。</dd></div>
+                  <div><dt>适合</dt><dd>探索者、早期采用者。</dd></div>
+                  <div><dt>切入</dt><dd>查看源码和 Issue 以了解其功能。</dd></div>
+                  <div><dt>注意</dt><dd>信息缺失，风险较高。</dd></div>
+                </dl>
+                <div class="tags"><span>未知</span><span>Rust</span><span>高风险</span></div>
+              </div>
+            </article>
+            
+            <article class="repo">
+              <div class="rank"><span>04</span></div>
+              <div class="repo-body">
+                <div class="repo-head">
+                  <h3><a href="https://github.com/nasa/spacewasm">nasa/spacewasm</a></h3>
+                  <div class="meta">
+                  <span>Rust</span>
+                  <span>星标 1367</span>
+                  <span>分叉 40</span>
+                  <span>创建 2026-06-24</span>
+                  <span>更新 2026-07-24</span>
+                  </div>
+                </div>
+                <p class="desc">A flight-compliant WebAssembly interpreter.</p>
+                <p class="reason">NASA 发布的飞行合规 WebAssembly 解释器。</p>
+                <div class="quality quality-high">
+                  <div class="quality-item"><span>含金量</span><strong>值得重点看</strong></div>
+                  <div class="quality-item"><span>质量分</span><strong>90</strong></div>
+                  <div class="quality-item"><span>水分风险</span><strong>低</strong></div>
+                  <div class="quality-item"><span>建议</span><strong>收藏跟踪</strong></div>
+                </div>
+                <p class="quality-reason">NASA 官方项目，技术含金量极高，Star 数反映其权威性。</p>
+                <dl class="detail-list">
+                  <div><dt>价值</dt><dd>将 WASM 引入航天领域，确保代码的安全性和可移植性，具有极高的工程价值。</dd></div>
+                  <div><dt>适合</dt><dd>嵌入式开发者、航天工程师、WASM 研究者。</dd></div>
+                  <div><dt>切入</dt><dd>阅读文档了解其合规性标准，尝试编译简单 WASM 模块。</dd></div>
+                  <div><dt>注意</dt><dd>领域极其垂直，普通开发者难以直接应用。</dd></div>
+                </dl>
+                <div class="tags"><span>NASA</span><span>WASM</span><span>航天</span><span>Rust</span></div>
+              </div>
+            </article>
+            
+            <article class="repo">
+              <div class="rank"><span>05</span></div>
+              <div class="repo-body">
+                <div class="repo-head">
+                  <h3><a href="https://github.com/zerx-lab/FluxDown">zerx-lab/FluxDown</a></h3>
+                  <div class="meta">
+                  <span>Rust</span>
+                  <span>星标 895</span>
+                  <span>分叉 48</span>
+                  <span>创建 2026-07-03</span>
+                  <span>更新 2026-07-24</span>
+                  </div>
+                </div>
+                <p class="desc">Rust 驱动的多协议下载管理器，支持 HTTP/FTP/BitTorrent 磁力链接及 HLS/DASH 流媒体，智能多线程加速与浏览器无缝集成。精美界面，极致性能，永久免费，零广告。</p>
+                <p class="reason">Rust 驱动的多协议下载管理器，支持 HTTP/FTP/BT/HLS/DASH，智能多线程加速。</p>
+                <div class="quality quality-good">
+                  <div class="quality-item"><span>含金量</span><strong>值得看</strong></div>
+                  <div class="quality-item"><span>质量分</span><strong>75</strong></div>
+                  <div class="quality-item"><span>水分风险</span><strong>中</strong></div>
+                  <div class="quality-item"><span>建议</span><strong>优先试跑</strong></div>
+                </div>
+                <p class="quality-reason">功能强大，Star 数高，但需关注其 Bug 修复进度。</p>
+                <dl class="detail-list">
+                  <div><dt>价值</dt><dd>提供了高性能、全能的下载解决方案，界面精美，无广告。</dd></div>
+                  <div><dt>适合</dt><dd>重度下载用户、Rust 爱好者、追求极致性能者。</dd></div>
+                  <div><dt>切入</dt><dd>下载并安装，测试大文件和流媒体的下载速度。</dd></div>
+                  <div><dt>注意</dt><dd>Issue 数较多，可能存在稳定性问题。</dd></div>
+                </dl>
+                <div class="tags"><span>下载器</span><span>Rust</span><span>多协议</span><span>高性能</span></div>
+              </div>
+            </article>
+            
+            <article class="repo">
+              <div class="rank"><span>06</span></div>
+              <div class="repo-body">
+                <div class="repo-head">
+                  <h3><a href="https://github.com/modiqo/waggle">modiqo/waggle</a></h3>
+                  <div class="meta">
+                  <span>Rust</span>
+                  <span>星标 848</span>
+                  <span>分叉 110</span>
+                  <span>创建 2026-07-08</span>
+                  <span>更新 2026-07-21</span>
+                  </div>
+                </div>
+                <p class="desc">Attributed, resolvable artifact references for agent handoffs — a ~30-byte token instead of pasted context. MCP-native; the reference layer for the agent-harness world.</p>
+                <p class="reason">为 Agent 交接提供可归因、可解析的工件引用，用 ~30 字节令牌替代粘贴上下文，MCP 原生。</p>
+                <div class="quality quality-high">
+                  <div class="quality-item"><span>含金量</span><strong>值得重点看</strong></div>
+                  <div class="quality-item"><span>质量分</span><strong>85</strong></div>
+                  <div class="quality-item"><span>水分风险</span><strong>低</strong></div>
+                  <div class="quality-item"><span>建议</span><strong>优先试跑</strong></div>
+                </div>
+                <p class="quality-reason">技术创新性强，解决了 Token 效率痛点，Star 数增长健康。</p>
+                <dl class="detail-list">
+                  <div><dt>价值</dt><dd>大幅降低 Agent 间通信的 Token 消耗，提升协作效率，是 Agent 工程化的关键组件。</dd></div>
+                  <div><dt>适合</dt><dd>多 Agent 系统开发者、MCP 生态建设者。</dd></div>
+                  <div><dt>切入</dt><dd>集成 Waggle SDK，测试 Agent 间的引用传递。</dd></div>
+                  <div><dt>注意</dt><dd>需生态广泛支持才能发挥最大价值。</dd></div>
+                </dl>
+                <div class="tags"><span>Agent协作</span><span>MCP</span><span>Token优化</span><span>Rust</span></div>
+              </div>
+            </article>
+            
+            <article class="repo">
+              <div class="rank"><span>07</span></div>
+              <div class="repo-body">
+                <div class="repo-head">
+                  <h3><a href="https://github.com/mesamirh/MovieBox-Tui">mesamirh/MovieBox-Tui</a></h3>
+                  <div class="meta">
+                  <span>Rust</span>
+                  <span>星标 677</span>
+                  <span>分叉 54</span>
+                  <span>创建 2026-07-16</span>
+                  <span>更新 2026-07-23</span>
+                  </div>
+                </div>
+                <p class="desc">A modern Rust based terminal user interface for MovieBox. Fast, lightweight, keyboard first, and cross-platform.</p>
+                <p class="reason">基于 Rust 的现代终端用户界面，用于 MovieBox，快速、轻量、键盘优先。</p>
+                <div class="quality quality-good">
+                  <div class="quality-item"><span>含金量</span><strong>值得看</strong></div>
+                  <div class="quality-item"><span>质量分</span><strong>65</strong></div>
+                  <div class="quality-item"><span>水分风险</span><strong>低</strong></div>
+                  <div class="quality-item"><span>建议</span><strong>低优先级</strong></div>
+                </div>
+                <p class="quality-reason">垂直领域工具，Star 数适中，用户体验良好。</p>
+                <dl class="detail-list">
+                  <div><dt>价值</dt><dd>为命令行用户提供了流畅的影视浏览体验，资源占用极低。</dd></div>
+                  <div><dt>适合</dt><dd>CLI 爱好者、影视爱好者、Linux 用户。</dd></div>
+                  <div><dt>切入</dt><dd>运行 TUI，浏览电影列表，测试播放功能。</dd></div>
+                  <div><dt>注意</dt><dd>依赖 MovieBox API，稳定性受第三方影响。</dd></div>
+                </dl>
+                <div class="tags"><span>TUI</span><span>影视</span><span>Rust</span><span>CLI</span></div>
+              </div>
+            </article>
+            
+            <article class="repo">
+              <div class="rank"><span>08</span></div>
+              <div class="repo-body">
+                <div class="repo-head">
+                  <h3><a href="https://github.com/GaoSSR/best-claude-hud">GaoSSR/best-claude-hud</a></h3>
+                  <div class="meta">
+                  <span>Rust</span>
+                  <span>星标 558</span>
+                  <span>分叉 10</span>
+                  <span>创建 2026-06-26</span>
+                  <span>更新 2026-07-23</span>
+                  </div>
+                </div>
+                <p class="desc">Minimal Claude Code statusline HUD powered by Rust.</p>
+                <p class="reason">由 Rust 驱动的最小化 Claude Code 状态行 HUD。</p>
+                <div class="quality quality-good">
+                  <div class="quality-item"><span>含金量</span><strong>值得看</strong></div>
+                  <div class="quality-item"><span>质量分</span><strong>60</strong></div>
+                  <div class="quality-item"><span>水分风险</span><strong>低</strong></div>
+                  <div class="quality-item"><span>建议</span><strong>低优先级</strong></div>
+                </div>
+                <p class="quality-reason">小而美工具，Star 数适中，实用性强。</p>
+                <dl class="detail-list">
+                  <div><dt>价值</dt><dd>在不干扰主界面的情况下提供关键状态信息，提升开发专注度。</dd></div>
+                  <div><dt>适合</dt><dd>Claude Code 用户、极简主义者。</dd></div>
+                  <div><dt>切入</dt><dd>安装 HUD，观察其在终端底部的状态显示。</dd></div>
+                  <div><dt>注意</dt><dd>功能单一，仅适用于特定工具。</dd></div>
+                </dl>
+                <div class="tags"><span>Claude</span><span>HUD</span><span>Rust</span><span>CLI</span></div>
+              </div>
+            </article>
+            
+            <article class="repo">
+              <div class="rank"><span>09</span></div>
+              <div class="repo-body">
+                <div class="repo-head">
+                  <h3><a href="https://github.com/Tura-AI/tura">Tura-AI/tura</a></h3>
+                  <div class="meta">
+                  <span>Rust</span>
+                  <span>星标 420</span>
+                  <span>分叉 18</span>
+                  <span>创建 2026-07-06</span>
+                  <span>更新 2026-07-24</span>
+                  </div>
+                </div>
+                <p class="desc">Across 348 long-horizon benchmark sessions, Tura used up to 83.1% fewer turns on the rewrite benchmark and improved the DeepSWE pass rate by up to 16.7 percentage points compared with Codex CLI.</p>
+                <p class="reason">在长 horizon 基准测试中，Tura 比 Codex CLI 减少 83.1% 的轮次，提升 DeepSWE 通过率 16.7%。</p>
+                <div class="quality quality-high">
+                  <div class="quality-item"><span>含金量</span><strong>值得重点看</strong></div>
+                  <div class="quality-item"><span>质量分</span><strong>88</strong></div>
+                  <div class="quality-item"><span>水分风险</span><strong>中</strong></div>
+                  <div class="quality-item"><span>建议</span><strong>优先试跑</strong></div>
+                </div>
+                <p class="quality-reason">性能数据亮眼，Star 数增长快，具有明显的竞争优势。</p>
+                <dl class="detail-list">
+                  <div><dt>价值</dt><dd>显著提升了 Agent 的执行效率和成功率，降低了 Token 成本。</dd></div>
+                  <div><dt>适合</dt><dd>追求高效 Agent 的开发者、成本控制敏感团队。</dd></div>
+                  <div><dt>切入</dt><dd>对比 Tura 与 Codex CLI 在相同任务下的表现。</dd></div>
+                  <div><dt>注意</dt><dd>需验证其在实际业务场景中的泛化能力。</dd></div>
+                </dl>
+                <div class="tags"><span>Agent优化</span><span>Token效率</span><span>Rust</span><span>基准测试</span></div>
+              </div>
+            </article>
+            
+            <article class="repo">
+              <div class="rank"><span>10</span></div>
+              <div class="repo-body">
+                <div class="repo-head">
+                  <h3><a href="https://github.com/SuperJJ007/CSSwitch">SuperJJ007/CSSwitch</a></h3>
+                  <div class="meta">
+                  <span>Rust</span>
+                  <span>星标 398</span>
+                  <span>分叉 40</span>
+                  <span>创建 2026-07-03</span>
+                  <span>更新 2026-07-23</span>
+                  </div>
+                </div>
+                <p class="desc">帮你的 Claude Science 一键接入你自己的 API：DeepSeek / 通义千问 / 智谱 GLM / Kimi / MiniMax / 小米 MiMo / 硅基流动 / OpenRouter / 任意 OpenAI·Anthropic 兼容端点</p>
+                <p class="reason">一键将 Claude Science 接入自有 API（DeepSeek/Qwen/GLM 等），支持 macOS 菜单栏。</p>
+                <div class="quality quality-good">
+                  <div class="quality-item"><span>含金量</span><strong>值得看</strong></div>
+                  <div class="quality-item"><span>质量分</span><strong>75</strong></div>
+                  <div class="quality-item"><span>水分风险</span><strong>低</strong></div>
+                  <div class="quality-item"><span>建议</span><strong>优先试跑</strong></div>
+                </div>
+                <p class="quality-reason">解决了模型选择的灵活性问题，Star 数适中，实用性强。</p>
+                <dl class="detail-list">
+                  <div><dt>价值</dt><dd>打破了 Claude Science 的模型锁定，允许用户使用更具性价比或特定能力的国产模型。</dd></div>
+                  <div><dt>适合</dt><dd>Claude Science 用户、国内模型使用者、macOS 用户。</dd></div>
+                  <div><dt>切入</dt><dd>配置 API Key，切换模型，测试响应效果。</dd></div>
+                  <div><dt>注意</dt><dd>依赖 Claude Science 的接口稳定性。</dd></div>
+                </dl>
+                <div class="tags"><span>Claude</span><span>模型切换</span><span>macOS</span><span>Rust</span></div>
+              </div>
+            </article>
+            
+        </section>
+        
+    <footer>由 GitHub Actions、GitHub API 和 DashScope 自动生成。</footer>
+  </main>
+</body>
+</html>
